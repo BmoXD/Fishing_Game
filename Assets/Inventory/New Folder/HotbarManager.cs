@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -13,6 +14,9 @@ public class HotbarManager : MonoBehaviour
     
     // Reference to inventory manager
     private InventoryManager inventoryManager;
+    private PlayerControls controls;
+
+    private bool ignoreInput;
     
     private void Start()
     {
@@ -31,6 +35,10 @@ public class HotbarManager : MonoBehaviour
                 hotbarSlots[i].Initialize(i + 1); // Set indices to 1-5
             }
         }
+        controls = new PlayerControls();
+        controls.UI.HotbarSlots.Enable();
+        controls.UI.HotbarSlots.performed += OnHotbarKeyPressed;
+        PlayerEvents.OnPlayerEnterMinigame += HandleEnterMinigame;
         
         // Subscribe to inventory changes
         inventoryManager.OnInventoryChanged += RefreshHotbar;
@@ -38,7 +46,12 @@ public class HotbarManager : MonoBehaviour
         // Do initial refresh
         RefreshHotbar();
     }
-    
+
+    private void HandleEnterMinigame(bool inMinigame)
+    {
+        ignoreInput = inMinigame;
+    }
+
     private void OnDestroy()
     {
         // Unsubscribe from events
@@ -46,6 +59,8 @@ public class HotbarManager : MonoBehaviour
         {
             inventoryManager.OnInventoryChanged -= RefreshHotbar;
         }
+        controls.UI.HotbarSlots.performed -= OnHotbarKeyPressed;
+        controls.UI.HotbarSlots.Disable();
     }
     
     // Refresh all hotbar slots based on bookmarked items
@@ -74,10 +89,13 @@ public class HotbarManager : MonoBehaviour
     }
     
     // Called by Player Input Component when hotkeys 1-5 are pressed
-    public void OnHotbarSelect(InputValue value)
+    public void OnHotbarKeyPressed(InputAction.CallbackContext context)
     {
+        if (ignoreInput)
+            return;
+            
         // The value from number keys 1-5 will be 1.0f to 5.0f
-        float inputValue = value.Get<float>();
+        float inputValue = context.ReadValue<float>();
         
         // Convert to int (1-5)
         int hotkeyNumber = Mathf.RoundToInt(inputValue);

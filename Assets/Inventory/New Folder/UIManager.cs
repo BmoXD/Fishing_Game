@@ -65,7 +65,6 @@ public class UIManager : MonoBehaviour
             fishingMinigame.onMinigameSuccess.AddListener(CloseMinigamePanel);
             fishingMinigame.onMinigameFail.AddListener(CloseMinigamePanel);
         }
-        OpenMinigamePanel();
     }
 
     private void OnDisable()
@@ -131,72 +130,133 @@ public class UIManager : MonoBehaviour
         }
     }
 
-// Toggle panel based on input action name
-public void TogglePanel(string inputActionName)
-{
-    // Check if any non-base panel is already open (except the one we're trying to toggle)
-    bool anotherPanelOpen = false;
-    GameObject currentOpenPanel = null;
-    
-    foreach (var checkPanel in panels)
+    // Toggle panel based on input action name
+    public void TogglePanel(string inputActionName)
     {
-        if (checkPanel.panel != basePanel && 
-            checkPanel.panel.activeSelf && 
-            checkPanel.inputActionName != inputActionName)
+        // Check if any non-base panel is already open (except the one we're trying to toggle)
+        bool anotherPanelOpen = false;
+        GameObject currentOpenPanel = null;
+        
+        foreach (var checkPanel in panels)
         {
-            anotherPanelOpen = true;
-            currentOpenPanel = checkPanel.panel;
-            break;
-        }
-    }
-    
-    // Find the panel we want to toggle
-    foreach (var panelInfo in panels)
-    {
-        if (panelInfo.inputActionName == inputActionName)
-        {
-            bool isActive = panelInfo.panel.activeSelf;
-            
-            // If this panel is already active, close it
-            if (isActive)
+            if (checkPanel.panel != basePanel && 
+                checkPanel.panel.activeSelf && 
+                checkPanel.inputActionName != inputActionName)
             {
-                // If we're closing a panel that disables controls
-                if (panelInfo.disablePlayerControls)
+                anotherPanelOpen = true;
+                currentOpenPanel = checkPanel.panel;
+                break;
+            }
+        }
+    
+        // Find the panel we want to toggle
+        foreach (var panelInfo in panels)
+        {
+            if (panelInfo.inputActionName == inputActionName)
+            {
+                bool isActive = panelInfo.panel.activeSelf;
+                
+                // If this panel is already active, close it
+                if (isActive)
                 {
-                    controlDisablingPanelsOpen--;
-                    if (controlDisablingPanelsOpen <= 0)
+                    // If we're closing a panel that disables controls
+                    if (panelInfo.disablePlayerControls)
                     {
-                        controlDisablingPanelsOpen = 0;
-                        PlayerEvents.RaisePlayerEnterMenu(false); // Enable controls
+                        controlDisablingPanelsOpen--;
+                        if (controlDisablingPanelsOpen <= 0)
+                        {
+                            controlDisablingPanelsOpen = 0;
+                            PlayerEvents.RaisePlayerEnterMenu(false); // Enable controls
+                        }
+                    }
+                    
+                    // Deactivate the panel
+                    panelInfo.panel.SetActive(false);
+                    
+                    // If closing a non-base panel, show the base panel
+                    if (panelInfo.panel != basePanel)
+                    {
+                        basePanel.SetActive(true);
                     }
                 }
-                
-                // Deactivate the panel
-                panelInfo.panel.SetActive(false);
-                
-                // If closing a non-base panel, show the base panel
-                if (panelInfo.panel != basePanel)
+                // If trying to open this panel
+                else
                 {
-                    basePanel.SetActive(true);
+                    // If another panel is open, ignore this request
+                    if (anotherPanelOpen)
+                    {
+                        Debug.Log($"Cannot open panel '{panelInfo.panel.name}' because '{currentOpenPanel.name}' is already open.");
+                        return;
+                    }
+                    
+                    // If this is not the base panel, hide the base panel
+                    if (panelInfo.panel != basePanel)
+                    {
+                        basePanel.SetActive(false);
+                    }
+                    
+                    // If opening a panel that disables controls
+                    if (panelInfo.disablePlayerControls)
+                    {
+                        if (controlDisablingPanelsOpen == 0)
+                        {
+                            PlayerEvents.RaisePlayerEnterMenu(true); // Disable controls
+                        }
+                        controlDisablingPanelsOpen++;
+                    }
+                    
+                    // Activate the panel
+                    panelInfo.panel.SetActive(true);
                 }
+                
+                return;
             }
-            // If trying to open this panel
-            else
+        }
+    }
+
+    // Open a specific panel by reference
+    public void OpenPanel(GameObject panel)
+    {
+        // Don't do anything if this panel is already open
+        if (panel.activeSelf)
+        {
+            return;
+        }
+        
+        // Check if any non-base panel is already open
+        bool anotherPanelOpen = false;
+        GameObject currentOpenPanel = null;
+        
+        foreach (var checkPanel in panels)
+        {
+            if (checkPanel.panel != basePanel && 
+                checkPanel.panel != panel && 
+                checkPanel.panel.activeSelf)
             {
-                // If another panel is open, ignore this request
-                if (anotherPanelOpen)
-                {
-                    Debug.Log($"Cannot open panel '{panelInfo.panel.name}' because '{currentOpenPanel.name}' is already open.");
-                    return;
-                }
-                
+                anotherPanelOpen = true;
+                currentOpenPanel = checkPanel.panel;
+                break;
+            }
+        }
+        
+        // If another panel is open, ignore this request
+        if (anotherPanelOpen)
+        {
+            Debug.Log($"Cannot open panel '{panel.name}' because '{currentOpenPanel.name}' is already open.");
+            return;
+        }
+        
+        foreach (var panelInfo in panels)
+        {
+            if (panelInfo.panel == panel)
+            {
                 // If this is not the base panel, hide the base panel
-                if (panelInfo.panel != basePanel)
+                if (panel != basePanel)
                 {
                     basePanel.SetActive(false);
                 }
                 
-                // If opening a panel that disables controls
+                // If opening a panel that disables player controls
                 if (panelInfo.disablePlayerControls)
                 {
                     if (controlDisablingPanelsOpen == 0)
@@ -208,71 +268,10 @@ public void TogglePanel(string inputActionName)
                 
                 // Activate the panel
                 panelInfo.panel.SetActive(true);
+                return;
             }
-            
-            return;
         }
     }
-}
-
-// Open a specific panel by reference
-public void OpenPanel(GameObject panel)
-{
-    // Don't do anything if this panel is already open
-    if (panel.activeSelf)
-    {
-        return;
-    }
-    
-    // Check if any non-base panel is already open
-    bool anotherPanelOpen = false;
-    GameObject currentOpenPanel = null;
-    
-    foreach (var checkPanel in panels)
-    {
-        if (checkPanel.panel != basePanel && 
-            checkPanel.panel != panel && 
-            checkPanel.panel.activeSelf)
-        {
-            anotherPanelOpen = true;
-            currentOpenPanel = checkPanel.panel;
-            break;
-        }
-    }
-    
-    // If another panel is open, ignore this request
-    if (anotherPanelOpen)
-    {
-        Debug.Log($"Cannot open panel '{panel.name}' because '{currentOpenPanel.name}' is already open.");
-        return;
-    }
-    
-    foreach (var panelInfo in panels)
-    {
-        if (panelInfo.panel == panel)
-        {
-            // If this is not the base panel, hide the base panel
-            if (panel != basePanel)
-            {
-                basePanel.SetActive(false);
-            }
-            
-            // If opening a panel that disables player controls
-            if (panelInfo.disablePlayerControls)
-            {
-                if (controlDisablingPanelsOpen == 0)
-                {
-                    PlayerEvents.RaisePlayerEnterMenu(true); // Disable controls
-                }
-                controlDisablingPanelsOpen++;
-            }
-            
-            // Activate the panel
-            panelInfo.panel.SetActive(true);
-            return;
-        }
-    }
-}
 
     // Close a specific panel by reference
     public void ClosePanel(GameObject panel)
@@ -428,20 +427,20 @@ public void OpenPanel(GameObject panel)
         return false;
     }
 
-    public void OpenMinigamePanel()
+    public void OpenMinigamePanel(float leftDriftIntensity, float rightPushIntensity)
     {
         // Special logic before opening
         // e.g. play sound, pause background music, etc.
 
         if (minigamePanel != null && !minigamePanel.activeSelf)
         {
+            fishingMinigame.Configure(leftDriftIntensity, rightPushIntensity);
             minigamePanel.SetActive(true);
-
-            // If you want to keep basePanel active, do NOT deactivate it here
+            fishingMinigame.StartMinigame();
 
             // Raise player menu event if needed
             PlayerEvents.RaisePlayerEnterMenu(true);
-            PlayerEvents.RaisePlayerEnterMenu(true);
+            PlayerEvents.RaisePlayerEnterMinigame(true);
         }
 
         // TODO: Add more minigame-specific logic here
@@ -458,7 +457,7 @@ public void OpenPanel(GameObject panel)
 
             // Raise player menu event if needed
             PlayerEvents.RaisePlayerEnterMenu(false);
-            PlayerEvents.RaisePlayerEnterMenu(false);
+            PlayerEvents.RaisePlayerEnterMinigame(false);
         }
 
         // TODO: Add more minigame-specific logic here

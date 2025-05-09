@@ -37,6 +37,7 @@ public class FishingRod : ItemFunctionality
     private Item caughtItem;
     private float caughtWeight = 0f;
     private WaterVolume currentWaterVolume;
+    private UIManager uiManager;
 
     public override void Use()
     {
@@ -75,6 +76,17 @@ public class FishingRod : ItemFunctionality
         {
             Debug.LogError("Socket is not a child of the player!");
             return;
+        }
+
+        uiManager = UIManager.Instance;
+        if (uiManager != null)
+        {
+            var minigame = uiManager.GetComponentInChildren<FishingMinigame>(true);
+            if (minigame != null)
+            {
+                minigame.onMinigameSuccess.AddListener(OnMinigameSuccess);
+                minigame.onMinigameFail.AddListener(OnMinigameFail);
+            }
         }
 
         itemSocket = socketObject.transform;
@@ -124,6 +136,15 @@ public class FishingRod : ItemFunctionality
         {
             Destroy(spawnedLine.gameObject);
             spawnedLine = null;
+        }
+        if (uiManager != null)
+        {
+            var minigame = uiManager.GetComponentInChildren<FishingMinigame>(true);
+            if (minigame != null)
+            {
+                minigame.onMinigameSuccess.RemoveListener(OnMinigameSuccess);
+                minigame.onMinigameFail.RemoveListener(OnMinigameFail);
+            }
         }
         PlayerEvents.RaiseFishingStateChanged(false);
     }
@@ -198,20 +219,11 @@ public class FishingRod : ItemFunctionality
                     caughtWeight = 0f;
                 }
 
-                // Pass weight to minigame (if supported)
-                FishingMinigame minigame = FindObjectOfType<FishingMinigame>();
-                if (minigame != null)
+                // Open the minigame panel with desired difficulty
+                if (uiManager != null)
                 {
-                    minigame.leftDriftIntensity = minigame.leftDriftIntensity + (caughtWeight / 1000f) * 2f; // Example scaling
-                    minigame.rightPushIntensity = minigame.rightPushIntensity + (caughtWeight / 1000f) * 3f; // Example scaling
-                    //TODO: Move over some logic to UIManager. Create an event that marks the player that they are in a minigame 
-                    minigame.onMinigameSuccess.AddListener(OnMinigameSuccess);
-                    minigame.onMinigameFail.AddListener(OnMinigameFail);
-                    minigame.StartMinigame();
-                }
-                else
-                {
-                    Debug.LogWarning("FishingMinigame not found in scene!");
+                    // You can pass custom values or use fields
+                    uiManager.OpenMinigamePanel(leftDriftIntensity: 1.2f + (caughtWeight / 1000f) * 2f, rightPushIntensity: 0.5f + (caughtWeight / 1000f) * 3f);
                 }
                 return;
             }

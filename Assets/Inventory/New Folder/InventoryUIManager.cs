@@ -13,12 +13,7 @@ public class InventoryUIManager : MonoBehaviour
     [SerializeField] private InventorySlot hoveredSlot;
     [SerializeField] private InventorySlot selectedSlot;
 
-    private PlayerInput _playerInput;
-    private InputAction _1;
-    private InputAction _2;
-    private InputAction _3;
-    private InputAction _4;
-    private InputAction _5;
+    private PlayerControls controls;
     
     // Reference to inventory manager
     private InventoryManager inventoryManager;
@@ -55,18 +50,21 @@ public class InventoryUIManager : MonoBehaviour
         {
             inventoryManager.OnInventoryChanged += RefreshInventory;
         }
+
+        controls = new PlayerControls();
+        controls.UI.HotbarSlots.Enable();
+        controls.UI.HotbarSlots.performed += OnHotbarSlots;
         
         //_1 = _playerInput.actions["HotbarSlots"].bindings[1];
     }
 
-    public void OnHotbarSlots(InputValue value)
+    public void OnHotbarSlots(InputAction.CallbackContext context)
     {
-        Debug.Log((int)value.Get<float>());
+        int inputValue = (int)context.ReadValue<float>();
+        Debug.Log(inputValue);
 
         if (hoveredSlot == null || hoveredSlot.Item == null)
             return;
-        
-        int inputValue = (int)value.Get<float>();
 
         InventoryItem itemToBookmark = hoveredSlot.Item;
 
@@ -89,6 +87,8 @@ public class InventoryUIManager : MonoBehaviour
         {
             inventoryManager.OnInventoryChanged -= RefreshInventory;
         }
+        controls.UI.HotbarSlots.Disable();
+        controls.UI.HotbarSlots.performed -= OnHotbarSlots;
         
         // Clear selection
         hoveredSlot = null;
