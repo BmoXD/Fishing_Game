@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9da56c7400d9cd2458148fbf5e6526c7, type: 3}
+  m_Name: Fishing Rod
+  m_EditorClassIdentifier: 
+  itemID: 2
+  itemName: Fishing Rod
+  icon: {fileID: 21300000, guid: ff7bfa7addf40784d86f62b8e4a034a6, type: 3}
+  prefab: {fileID: 5426466293307873979, guid: 80b9f0ba0a58d2e49be865ccbfad086b, type: 3}
+  description: Rod
+  weight: 0
+  type: 2
+  basePricePerGram: 1
+  minWeight: 1
+  maxWeight: 1000
+  deleteOnConsume: 0
+  functionalityScript: {fileID: 0}
+  onScreenHints:
+  - Left Mouse button to cast

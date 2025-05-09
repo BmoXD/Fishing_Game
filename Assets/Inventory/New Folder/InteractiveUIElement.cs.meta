@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: 0b9e3e096f84fac4289917189316e426
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - iconImage: {instanceID: 0}
+  - icon: {instanceID: 0}
+  - emptyIcon: {instanceID: 0}
+  - hoverBorder: {instanceID: 0}
+  - tooltipPrefab: {fileID: 4680119587548077137, guid: 1ff856aefea245d4c9cb35b2179886ad,
+      type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

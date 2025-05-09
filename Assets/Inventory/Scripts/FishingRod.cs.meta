@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e3c17a77214b0594ca8ad8552948eb84
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - bobberPrefab: {fileID: 7159422916408649359, guid: 05ea4199733d38c438c3f0238c9dfd70,
+      type: 3}
+  - rodTip: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -1,5 +1,18 @@
 {
   "dependencies": {
+    "com.naelstrof.jigglephysics": {
+      "version": "https://github.com/naelstrof/UnityJigglePhysics.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "b97445e56b54148893c4517babc246f6f30742d7"
+    },
+    "com.unity.2d.sprite": {
+      "version": "1.0.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
     "com.unity.burst": {
       "version": "1.8.19",
       "depth": 1,
@@ -7,6 +20,15 @@
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
         "com.unity.modules.jsonserialize": "1.0.0"
+      },
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.cinemachine": {
+      "version": "2.10.3",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.31"
       },
       "url": "https://packages.unity.com"
     },
@@ -47,6 +69,15 @@
       "depth": 0,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.inputsystem": {
+      "version": "1.11.2",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.modules.uielements": "1.0.0"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.mathematics": {
