@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6892306503252562252}
   - component: {fileID: 7678128247900924558}
   - component: {fileID: 7560965078509141069}
+  - component: {fileID: 3450514626875278614}
   m_Layer: 0
   m_Name: Bobber
   m_TagString: Untagged
@@ -107,6 +108,27 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3450514626875278614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4281700735143757266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3c17a77214b0594ca8ad8552948eb84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  aimIndicatorPrefab: {fileID: 0}
+  aimStartHeight: 2
+  aimStartForward: 1
+  aimMoveSpeed: 6
+  aimMaxDistance: 15
+  rodTip: {fileID: 0}
+  bobberPrefab: {fileID: 7159422916408649359, guid: 05ea4199733d38c438c3f0238c9dfd70,
+    type: 3}
+  fishingLinePrefab: {fileID: 0}
 --- !u!1 &6949143602841262477
 GameObject:
   m_ObjectHideFlags: 0
