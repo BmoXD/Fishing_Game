@@ -97,14 +97,15 @@ public class InventoryManager : MonoBehaviour
     }
 
     // Add a new instance of an item instead of stacking
-    public bool AddItemAsNewInstance(Item item)
+    public InventoryItem AddItemAsNewInstance(Item item)
     {
-        if (item == null) return false;
+        if (item == null) return null;
         
         // Always create a new inventory item with quantity 1
-        inventoryItems.Add(new InventoryItem(item, 1));
+        InventoryItem invItem = new InventoryItem(item, 1);
+        inventoryItems.Add(invItem);
         OnInventoryChanged?.Invoke();
-        return true;
+        return invItem;
     }
 
     // Remove a specific instance of an item

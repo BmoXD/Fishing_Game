@@ -280,7 +280,7 @@ public class FishingRod : ItemFunctionality
         // Check if last raycast hit water
         if (lastAimHit.collider != null && lastAimHit.collider.CompareTag("Water"))
         {
-            Debug.Log("Bobber hit water! Start fishing.");
+            Debug.Log("Bobber hit water! Start fishing. "+ lastAimHit.point);
             if (playerAnimator != null)
                 playerAnimator.SetBool("Fishing", true);
             isFishing = true;
@@ -326,6 +326,7 @@ public class FishingRod : ItemFunctionality
     // Coroutine to animate bobber in an arc
     private System.Collections.IEnumerator AnimateBobberToTarget(Transform bobber, Vector3 start, Vector3 end, float duration)
     {
+        // Debug.Log("Animating");
         float elapsed = 0f;
         Vector3 mid = (start + end) / 2f + Vector3.up * 3f; // Adjust height for arc
 
@@ -337,6 +338,8 @@ public class FishingRod : ItemFunctionality
                         2 * (1 - t) * t * mid +
                         Mathf.Pow(t, 2) * end;
             bobber.position = pos;
+            // Debug.Log("pos: "+pos);
+            // Debug.Log("bobber.position: "+bobber.position);
             elapsed += Time.deltaTime;
             yield return null;
         }
@@ -391,8 +394,7 @@ public class FishingRod : ItemFunctionality
 
         if (caughtItem != null)
         {
-            InventoryManager.Instance.AddItemAsNewInstance(caughtItem);
-            InventoryItem invItem = InventoryManager.Instance.GetInventoryItem(caughtItem);
+            InventoryItem invItem = InventoryManager.Instance.AddItemAsNewInstance(caughtItem);
             if (invItem != null)
             {
                 invItem.Weight = caughtWeight;
