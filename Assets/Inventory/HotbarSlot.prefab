@@ -250,10 +250,9 @@ MonoBehaviour:
   isClicked: 0
   resizeOnClicked: 1
   resizePercentageOnClicked: 0.8
-  hasHoverTooltip: 0
+  hasHoverTooltip: 1
   hoverTooltipTitle: 
   hoverTooltipDescription: 
-  hoverTooltipExtraInfo: 
   tooltipPrefab: {fileID: 0}
   inventoryItem:
     itemData: {fileID: 0}

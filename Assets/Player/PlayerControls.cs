@@ -89,6 +89,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Use"",
+                    ""type"": ""Button"",
+                    ""id"": ""9197d896-7c46-472e-8440-f7457b912353"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -212,6 +221,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""LeftMouse"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""6c865254-89a5-4f61-ba34-6704243ce562"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Use"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -270,8 +290,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""id"": ""3c7022bf-7922-4f7c-a998-c437916075ad"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
+                    ""interactions"": ""Press(behavior=2)"",
+                    ""initialStateCheck"": false
                 },
                 {
                     ""name"": ""ScrollWheel"",
@@ -892,6 +912,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_RightMouse = m_Player.FindAction("RightMouse", throwIfNotFound: true);
         m_Player_Scroll = m_Player.FindAction("Scroll", throwIfNotFound: true);
         m_Player_LeftMouse = m_Player.FindAction("LeftMouse", throwIfNotFound: true);
+        m_Player_Use = m_Player.FindAction("Use", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_HotbarSlots = m_UI.FindAction("HotbarSlots", throwIfNotFound: true);
@@ -985,6 +1006,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_RightMouse;
     private readonly InputAction m_Player_Scroll;
     private readonly InputAction m_Player_LeftMouse;
+    private readonly InputAction m_Player_Use;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -996,6 +1018,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @RightMouse => m_Wrapper.m_Player_RightMouse;
         public InputAction @Scroll => m_Wrapper.m_Player_Scroll;
         public InputAction @LeftMouse => m_Wrapper.m_Player_LeftMouse;
+        public InputAction @Use => m_Wrapper.m_Player_Use;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1026,6 +1049,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @LeftMouse.started += instance.OnLeftMouse;
             @LeftMouse.performed += instance.OnLeftMouse;
             @LeftMouse.canceled += instance.OnLeftMouse;
+            @Use.started += instance.OnUse;
+            @Use.performed += instance.OnUse;
+            @Use.canceled += instance.OnUse;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1051,6 +1077,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @LeftMouse.started -= instance.OnLeftMouse;
             @LeftMouse.performed -= instance.OnLeftMouse;
             @LeftMouse.canceled -= instance.OnLeftMouse;
+            @Use.started -= instance.OnUse;
+            @Use.performed -= instance.OnUse;
+            @Use.canceled -= instance.OnUse;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1274,6 +1303,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnRightMouse(InputAction.CallbackContext context);
         void OnScroll(InputAction.CallbackContext context);
         void OnLeftMouse(InputAction.CallbackContext context);
+        void OnUse(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {

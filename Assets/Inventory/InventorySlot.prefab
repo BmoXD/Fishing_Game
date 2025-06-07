@@ -446,10 +446,9 @@ MonoBehaviour:
   isClicked: 0
   resizeOnClicked: 1
   resizePercentageOnClicked: 1.05
-  hasHoverTooltip: 0
+  hasHoverTooltip: 1
   hoverTooltipTitle: 
   hoverTooltipDescription: 
-  hoverTooltipExtraInfo: 
   tooltipPrefab: {fileID: 0}
   inventoryItem:
     itemData: {fileID: 0}
@@ -457,6 +456,7 @@ MonoBehaviour:
     bookmarkSlot: 0
     customWeight: 0
   slotIndex: 0
+  showEquipItemTooltip: 1
   bookmarkText: {fileID: 8183833407211742035}
   quantityText: {fileID: 7525210109603722354}
 --- !u!1 &7235699610430276346

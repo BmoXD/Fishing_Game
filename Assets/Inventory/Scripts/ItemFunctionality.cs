@@ -16,7 +16,6 @@ public abstract class ItemFunctionality : MonoBehaviour
         controls.Item.Use.started += OnUseStarted;
         controls.Item.Use.canceled += OnUseCanceled;
         controls.Item.Enable();
-
     }
 
     protected virtual void OnDisable()

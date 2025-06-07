@@ -26,7 +26,7 @@ public class MenuButtonElement : InteractiveUIElement
     {
         if (targetPanel == null || UIManager.Instance == null)
             return;
-            
+
         // Try opening with action name first
         string actionName = GetPanelActionName();
         if (!string.IsNullOrEmpty(actionName))
@@ -38,6 +38,7 @@ public class MenuButtonElement : InteractiveUIElement
             // Direct open if we can't find the action name
             UIManager.Instance.OpenPanel(targetPanel);
         }
+        UIManager.Instance.ShowDialog("Test", "adsadadsadaddadadadadadadad");
     }
 
     // Find the input action name for this panel

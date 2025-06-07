@@ -142,3 +142,5 @@ MonoBehaviour:
     type: 3}
   fishingLinePrefab: {fileID: 8088211505993255452, guid: f2a3f57f84f644243a1cc188c0fb03a6,
     type: 3}
+  fishOnParticlePrefab: {fileID: 4524801052115591937, guid: 439196a1778e32f43952ba3367195fae,
+    type: 3}

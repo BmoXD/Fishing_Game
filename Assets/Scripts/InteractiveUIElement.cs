@@ -33,7 +33,6 @@ public class InteractiveUIElement : MonoBehaviour, IPointerEnterHandler, IPointe
     [SerializeField] protected bool hasHoverTooltip = false;
     [SerializeField] protected string hoverTooltipTitle = "";
     [SerializeField] [TextArea] protected string hoverTooltipDescription = "";
-    [SerializeField] [TextArea] protected string hoverTooltipExtraInfo = "";
     
     // References
     protected Vector3 originalScale;
@@ -81,6 +80,11 @@ public class InteractiveUIElement : MonoBehaviour, IPointerEnterHandler, IPointe
         ApplyClickedState();
     }
 
+    protected virtual void OnDisable()
+    {
+        TooltipManager.Instance.HideTooltip();
+    }
+
     private void OnHandleEnterMinigame(bool inMinigame)
     {
         ignoreInput = inMinigame;
@@ -91,23 +95,20 @@ public class InteractiveUIElement : MonoBehaviour, IPointerEnterHandler, IPointe
     {
         if (ignoreInput)
             return;
-        
+
         isHovered = true;
-        
+
         if (hoverBorder != null)
         {
             hoverBorder.gameObject.SetActive(true);
         }
-        
+
         if (resizeOnHover && !isClicked)
         {
             transform.localScale = originalScale * resizePercentageOnHover;
         }
-        
-        if (hasHoverTooltip)
-        {
-            //ShowTooltip();
-        }
+
+        ShowTooltip();
     }
 
     public virtual void OnPointerExit(PointerEventData eventData)
@@ -131,16 +132,29 @@ public class InteractiveUIElement : MonoBehaviour, IPointerEnterHandler, IPointe
             transform.localScale = originalScale * resizePercentageOnClicked;
         }
         
-        //HideTooltip();
+        TooltipManager.Instance.HideTooltip();
+    }
+    protected virtual void ShowTooltip()
+    {
+        if (hasHoverTooltip)
+        {
+            TooltipManager.Instance.ShowTooltip(
+                hoverTooltipTitle,
+                hoverTooltipDescription,
+                false, // showEquip
+                "",    // weight
+                ""     // worth
+            );
+        }
     }
 
     public virtual void OnPointerDown(PointerEventData eventData)
     {
         if (ignoreInput)
             return;
-        
+
         isPressed = true;
-        
+
         if (resizeOnClick)
         {
             transform.localScale = originalScale * resizePercentageOnClick;
@@ -259,51 +273,6 @@ public class InteractiveUIElement : MonoBehaviour, IPointerEnterHandler, IPointe
     }
     #endregion
 
-    // #region Tooltip Management
-    // protected virtual void ShowTooltip()
-    // {
-    //     if (!hasHoverTooltip || string.IsNullOrEmpty(hoverTooltipTitle) || tooltipPrefab == null)
-    //         return;
-
-    //     // Find the root Canvas if one wasn't found in Awake
-    //     if (parentCanvas == null)
-    //     {
-    //         parentCanvas = GetComponentInParent<Canvas>();
-    //         if (parentCanvas == null)
-    //         {
-    //             Debug.LogWarning("InteractiveUIElement: No parent Canvas found. Cannot show tooltip.");
-    //             return;
-    //         }
-    //     }
-
-    //     // Get the root Canvas transform to ensure tooltip appears within the UI hierarchy
-    //     Transform canvasTransform = parentCanvas.transform;
-        
-    //     if (tooltipInstance == null)
-    //     {
-    //         // Instantiate the tooltip as a child of the canvas
-    //         tooltipInstance = Instantiate(tooltipPrefab, canvasTransform);
-            
-    //         // Assign content
-    //         UITooltip tooltip = tooltipInstance.GetComponent<UITooltip>();
-    //         if (tooltip != null)
-    //         {
-    //             tooltip.SetContent(hoverTooltipTitle, hoverTooltipDescription, hoverTooltipExtraInfo);
-    //         }
-    //     }
-    // }
-
-
-    // protected virtual void HideTooltip()
-    // {
-    //     if (tooltipInstance != null)
-    //     {
-    //         Destroy(tooltipInstance);
-    //         tooltipInstance = null;
-    //     }
-    // }
-    // // #endregion
-
     #region Click State Management
     protected virtual void OnElementClicked()
     {
@@ -350,23 +319,6 @@ public class InteractiveUIElement : MonoBehaviour, IPointerEnterHandler, IPointe
             iconImage.sprite = icon;
         }
     }
-
-    // public virtual void SetTooltipContent(string title, string description, string extraInfo)
-    // {
-    //     hoverTooltipTitle = title;
-    //     hoverTooltipDescription = description;
-    //     hoverTooltipExtraInfo = extraInfo;
-        
-    //     // Update the tooltip if it's currently visible
-    //     if (tooltipInstance != null)
-    //     {
-    //         UITooltip tooltip = tooltipInstance.GetComponent<UITooltip>();
-    //         if (tooltip != null)
-    //         {
-    //             tooltip.SetContent(hoverTooltipTitle, hoverTooltipDescription, hoverTooltipExtraInfo);
-    //         }
-    //     }
-    // }
 
     public bool IsClicked()
     {

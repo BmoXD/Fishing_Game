@@ -16,13 +16,21 @@ public class UIManager : MonoBehaviour
         public bool disablePlayerControls;
     }
 
+    [Header("Dialog Box")]
+    [SerializeField] private GameObject dialogPanel;
+    private DialogBox dialogBox;
+
+
     // Global event for player control state
     //public delegate void PlayerControlsEvent(bool enabled);
     //public static event PlayerControlsEvent OnPlayerControlsChanged;
 
+    [Header("Panels")]
     // References
     [SerializeField] private List<PanelInfo> panels = new List<PanelInfo>();
     [SerializeField] private GameObject basePanel;
+
+    private bool isAnotherPanelOpen = false;
 
     [Header("Minigame")]
     [SerializeField] private GameObject minigamePanel;
@@ -51,6 +59,13 @@ public class UIManager : MonoBehaviour
             fishingMinigame = minigamePanel.GetComponent<FishingMinigame>();
         }
 
+        if (dialogPanel != null)
+        {
+            dialogBox = dialogPanel.GetComponent<DialogBox>();
+            if (dialogBox == null)
+                Debug.LogError("DialogBox component missing on dialogPanel!");
+        }
+
         // Initialize input controls
         playerControls = new PlayerControls();
     }
@@ -65,6 +80,7 @@ public class UIManager : MonoBehaviour
             fishingMinigame.onMinigameSuccess.AddListener(CloseMinigamePanel);
             fishingMinigame.onMinigameFail.AddListener(CloseMinigamePanel);
         }
+        //ShowDialog("Test", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     }
 
     private void OnDisable()
@@ -129,86 +145,52 @@ public class UIManager : MonoBehaviour
             }
         }
     }
+    
+    // Show dialog with title and message
+    public void ShowDialog(string title, string message)
+    {
+        if (dialogBox != null)
+        {
+            dialogBox.Show(title, message);
+            if (basePanel != null)
+                basePanel.SetActive(false); // Hide base panel when dialog is shown
+            PlayerOpensPanel(true);
+        }
+    }
+
+    // Close dialog
+    public void CloseDialog()
+    {
+        if (dialogBox != null)
+        {
+            dialogBox.Close();
+            if (basePanel != null)
+                basePanel.SetActive(true); // Show base panel when dialog is closed
+            PlayerOpensPanel(false);
+        }
+    }
+
+    private void PlayerOpensPanel(bool isInMenu)
+    {
+        isAnotherPanelOpen = isInMenu;
+        PlayerEvents.RaisePlayerEnterMenu(isInMenu);
+    }
 
     // Toggle panel based on input action name
     public void TogglePanel(string inputActionName)
     {
-        // Check if any non-base panel is already open (except the one we're trying to toggle)
-        bool anotherPanelOpen = false;
-        GameObject currentOpenPanel = null;
-        
-        foreach (var checkPanel in panels)
-        {
-            if (checkPanel.panel != basePanel && 
-                checkPanel.panel.activeSelf && 
-                checkPanel.inputActionName != inputActionName)
-            {
-                anotherPanelOpen = true;
-                currentOpenPanel = checkPanel.panel;
-                break;
-            }
-        }
-    
-        // Find the panel we want to toggle
         foreach (var panelInfo in panels)
         {
             if (panelInfo.inputActionName == inputActionName)
             {
-                bool isActive = panelInfo.panel.activeSelf;
-                
-                // If this panel is already active, close it
-                if (isActive)
+                if (panelInfo.panel.activeSelf)
                 {
-                    // If we're closing a panel that disables controls
-                    if (panelInfo.disablePlayerControls)
-                    {
-                        controlDisablingPanelsOpen--;
-                        if (controlDisablingPanelsOpen <= 0)
-                        {
-                            controlDisablingPanelsOpen = 0;
-                            PlayerEvents.RaisePlayerEnterMenu(false); // Enable controls
-                        }
-                    }
-                    
-                    // Deactivate the panel
-                    panelInfo.panel.SetActive(false);
-                    
-                    // If closing a non-base panel, show the base panel
-                    if (panelInfo.panel != basePanel)
-                    {
-                        basePanel.SetActive(true);
-                    }
+                    ClosePanel(panelInfo.panel);
                 }
-                // If trying to open this panel
                 else
                 {
-                    // If another panel is open, ignore this request
-                    if (anotherPanelOpen)
-                    {
-                        Debug.Log($"Cannot open panel '{panelInfo.panel.name}' because '{currentOpenPanel.name}' is already open.");
-                        return;
-                    }
-                    
-                    // If this is not the base panel, hide the base panel
-                    if (panelInfo.panel != basePanel)
-                    {
-                        basePanel.SetActive(false);
-                    }
-                    
-                    // If opening a panel that disables controls
-                    if (panelInfo.disablePlayerControls)
-                    {
-                        if (controlDisablingPanelsOpen == 0)
-                        {
-                            PlayerEvents.RaisePlayerEnterMenu(true); // Disable controls
-                        }
-                        controlDisablingPanelsOpen++;
-                    }
-                    
-                    // Activate the panel
-                    panelInfo.panel.SetActive(true);
+                    OpenPanel(panelInfo.panel);
                 }
-                
                 return;
             }
         }
@@ -217,57 +199,34 @@ public class UIManager : MonoBehaviour
     // Open a specific panel by reference
     public void OpenPanel(GameObject panel)
     {
-        // Don't do anything if this panel is already open
         if (panel.activeSelf)
         {
             return;
         }
-        
-        // Check if any non-base panel is already open
-        bool anotherPanelOpen = false;
-        GameObject currentOpenPanel = null;
-        
-        foreach (var checkPanel in panels)
+        if (isAnotherPanelOpen)
         {
-            if (checkPanel.panel != basePanel && 
-                checkPanel.panel != panel && 
-                checkPanel.panel.activeSelf)
-            {
-                anotherPanelOpen = true;
-                currentOpenPanel = checkPanel.panel;
-                break;
-            }
-        }
-        
-        // If another panel is open, ignore this request
-        if (anotherPanelOpen)
-        {
-            Debug.Log($"Cannot open panel '{panel.name}' because '{currentOpenPanel.name}' is already open.");
+            Debug.Log($"Cannot open panel '{panel.name}' because another panel is already open.");
             return;
         }
-        
         foreach (var panelInfo in panels)
         {
             if (panelInfo.panel == panel)
             {
-                // If this is not the base panel, hide the base panel
                 if (panel != basePanel)
                 {
                     basePanel.SetActive(false);
                 }
-                
-                // If opening a panel that disables player controls
                 if (panelInfo.disablePlayerControls)
                 {
                     if (controlDisablingPanelsOpen == 0)
                     {
-                        PlayerEvents.RaisePlayerEnterMenu(true); // Disable controls
+                        PlayerOpensPanel(true);
                     }
                     controlDisablingPanelsOpen++;
                 }
-                
-                // Activate the panel
                 panelInfo.panel.SetActive(true);
+                // After open, update isAnotherPanelOpen
+                PlayerOpensPanel(true);
                 return;
             }
         }
@@ -280,24 +239,18 @@ public class UIManager : MonoBehaviour
         {
             if (panelInfo.panel == panel && panelInfo.panel.activeSelf)
             {
-                // If panel disables player controls
                 if (panelInfo.disablePlayerControls)
                 {
                     controlDisablingPanelsOpen--;
                     if (controlDisablingPanelsOpen <= 0)
                     {
                         controlDisablingPanelsOpen = 0;
-                        PlayerEvents.RaisePlayerEnterMenu(false); // Enable controls
+                        PlayerOpensPanel(false);
                     }
                 }
-                
-                // Deactivate the panel
                 panelInfo.panel.SetActive(false);
-                
-                // If we're closing a non-base panel, check if we should show the base panel
                 if (panel != basePanel)
                 {
-                    // Check if any other non-base panels are still open
                     bool anyPanelOpen = false;
                     foreach (var otherPanel in panels)
                     {
@@ -307,14 +260,12 @@ public class UIManager : MonoBehaviour
                             break;
                         }
                     }
-                    
-                    // If no other panels open, show base panel
                     if (!anyPanelOpen)
                     {
                         basePanel.SetActive(true);
+                        PlayerOpensPanel(false);
                     }
                 }
-                
                 return;
             }
         }
@@ -348,7 +299,7 @@ public class UIManager : MonoBehaviour
         if (playerControlsNeedRestore && controlDisablingPanelsOpen <= 0)
         {
             controlDisablingPanelsOpen = 0;
-            PlayerEvents.RaisePlayerEnterMenu(false); // Re-enable controls
+            PlayerOpensPanel(false); // Re-enable controls
         }
     }
 

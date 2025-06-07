@@ -8,4 +8,48 @@ AvatarMask:
   m_PrefabAsset: {fileID: 0}
   m_Name: Arms Mask
   m_Mask: 00000000000000000000000000000000000000000100000001000000010000000100000000000000000000000000000000000000
-  m_Elements: []
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: BoxCat
+    m_Weight: 0
+  - m_Path: BoxCat_Armature
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/L.Leg
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/L.Leg/L.Leg.001
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/L.Leg/L.Leg.001/L.Toe
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/R.Leg
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/R.Leg/R.Leg.001
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/R.Leg/R.Leg.001/R.Toe
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/Spine
+    m_Weight: 1
+  - m_Path: BoxCat_Armature/Pelvis/Spine/Spine.001
+    m_Weight: 1
+  - m_Path: BoxCat_Armature/Pelvis/Spine/Spine.001/Head
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/Spine/Spine.001/Head/L.Ear
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/Spine/Spine.001/Head/R.Ear
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/Spine/Spine.001/L.Arm
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/Spine/Spine.001/L.Arm/L.Arm.001
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/Spine/Spine.001/L.Arm/L.Arm.001/L.Hand
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/Spine/Spine.001/R.Arm
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/Spine/Spine.001/R.Arm/R.Arm.001
+    m_Weight: 0
+  - m_Path: BoxCat_Armature/Pelvis/Spine/Spine.001/R.Arm/R.Arm.001/R.Hand
+    m_Weight: 0
+  - m_Path: BoxCat_Ears
+    m_Weight: 0

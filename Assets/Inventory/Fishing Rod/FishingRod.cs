@@ -18,6 +18,7 @@ public class FishingRod : ItemFunctionality
     [SerializeField] private Transform rodTip; // Assign in inspector: the tip of the rod
     [SerializeField] private GameObject bobberPrefab; // Assign your bobber prefab in inspector
     [SerializeField] private GameObject fishingLinePrefab; // Assign a prefab with CurvedLine
+    [SerializeField] private GameObject fishOnParticlePrefab; // Assign your particle prefab in inspector
 
     private GameObject aimObject;
     private GameObject aimPlane;
@@ -38,6 +39,8 @@ public class FishingRod : ItemFunctionality
     private float caughtWeight = 0f;
     private WaterVolume currentWaterVolume;
     private UIManager uiManager;
+
+    private ParticleSystem fishOnParticleInstance;
 
     public override void Use()
     {
@@ -159,6 +162,21 @@ public class FishingRod : ItemFunctionality
                 isWaitingForBite = false;
                 // Fish bites!
                 Debug.Log("A fish is on the hook! Press Use to start the minigame.");
+
+                // Play particle effect at bobber's position
+                if (spawnedBobber != null && fishOnParticlePrefab != null)
+                {
+                    if (fishOnParticleInstance != null)
+                    {
+                        Destroy(fishOnParticleInstance.gameObject);
+                    }
+                    fishOnParticleInstance = Instantiate(
+                        fishOnParticlePrefab,
+                        spawnedBobber.transform.position,
+                        fishOnParticlePrefab.transform.rotation // Use prefab's rotation
+                    ).GetComponent<ParticleSystem>();
+                    fishOnParticleInstance.Play();
+                }
                 // Optionally, play a bobber animation or sound here
             }
         }
@@ -412,6 +430,7 @@ public class FishingRod : ItemFunctionality
     private void OnMinigameFail()
     {
         minigameActive = false;
+
         Debug.Log("The fish got away!");
         CleanupFishing();
     }
@@ -438,6 +457,13 @@ public class FishingRod : ItemFunctionality
         if (spawnedBobber != null && rodTip != null)
         {
             StartCoroutine(AnimateBobberBackAndCleanup(spawnedBobber.transform, spawnedBobber.transform.position, rodTip.position, 1.0f));
+        }
+
+        // Stop and destroy the fish-on particle effect
+        if (fishOnParticleInstance != null)
+        {
+            fishOnParticleInstance.Stop();
+            fishOnParticleInstance = null;
         }
 
         PlayerEvents.RaiseFishingStateChanged(false);

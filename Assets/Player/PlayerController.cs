@@ -93,6 +93,9 @@ public class ThirdPersonController : MonoBehaviour
     private bool _grounded = true;
     private const float _threshold = 0.01f;
 
+    // INTERACTION SYSTEM
+    public float interactRange = 2f; // How far the player can interact
+
     private void Awake()
     {
         // get a reference to our main camera
@@ -181,6 +184,8 @@ public class ThirdPersonController : MonoBehaviour
         }
 
         PlayerEvents.OnFishingStateChanged += HandleFishingStateChanged;
+
+        _playerControls.Player.Use.performed += OnUsePerformed;
     }
 
     private void OnDisable()
@@ -327,6 +332,30 @@ public class ThirdPersonController : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
     }
 
+    private void OnUsePerformed(InputAction.CallbackContext ctx)
+    {
+        Debug.Log("Use key pressed");
+        TryInteract();
+    }
+
+    private void TryInteract()
+    {
+        // Check for nearby interactables (sphere overlap)
+        Collider[] hits = Physics.OverlapSphere(transform.position, interactRange);
+        foreach (var hit in hits)
+        {
+            // Try to get IInteractable from the collider, its parent, or its children
+            var interactable = hit.GetComponent<IInteractable>()
+                ?? hit.GetComponentInParent<IInteractable>()
+                ?? hit.GetComponentInChildren<IInteractable>();
+            if (interactable != null)
+            {
+                interactable.Interact(gameObject);
+                break;
+            }
+        }
+    }
+
     private void AssignAnimationIDs()
     {
         _animIDSpeed = Animator.StringToHash("Speed");
@@ -433,7 +462,7 @@ public class ThirdPersonController : MonoBehaviour
                 // Scale input by sensitivity
                 float sensitivity = 1.0f;
                 _cinemachineTargetYaw += lookInput.x * sensitivity;
-                _cinemachineTargetPitch -= lookInput.y * sensitivity;
+                _cinemachineTargetPitch += lookInput.y * sensitivity;
             }
 
             // Clamp pitch
