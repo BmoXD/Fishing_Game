@@ -131,14 +131,14 @@ public class ItemSlot : InteractiveUIElement
     {
         if (inventoryItem != null && inventoryItem.ItemData != null)
         {
-            var item = inventoryItem.ItemData;
-            bool showWeightAndWorth = item.type == ItemType.Default;
+            InventoryItem invItem = inventoryItem;
+            bool showWeightAndWorth = invItem.ItemData.type == ItemType.Default;
             TooltipManager.Instance.ShowTooltip(
-                item.itemName,
-                item.description,
+                invItem.ItemData.name,
+                invItem.ItemData.description,
                 showEquipItemTooltip, // showEquip (or your logic)
-                showWeightAndWorth ? item.weight.ToString("0.##") : string.Empty,
-                showWeightAndWorth ? item.basePricePerGram.ToString("0.##") : string.Empty
+                showWeightAndWorth ? invItem.Weight.ToString("0.##") : string.Empty,
+                showWeightAndWorth ? invItem.getPrice().ToString("0.##") : string.Empty
             );
         }
         else

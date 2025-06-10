@@ -3,13 +3,14 @@ using UnityEngine;
 
 public static class PlayerEvents
 {
-    public static event Action<bool> OnFishingStateChanged;
+    public static event Action<bool> OnFreezePlayer;
     public static event Action<bool> OnPlayerEnterMenu;
     public static event Action<bool> OnPlayerEnterMinigame;
+    public static event Action<bool> OnDialogBoxStateChanged;
 
-    public static void RaiseFishingStateChanged(bool isFishing)
+    public static void RaisePlayerFreeze(bool isFishing)
     {
-        OnFishingStateChanged.Invoke(isFishing);
+        OnFreezePlayer.Invoke(isFishing);
         Debug.Log("RaiseFishingStateChanged: "+isFishing);
     }
 
@@ -23,5 +24,11 @@ public static class PlayerEvents
     {
         OnPlayerEnterMinigame.Invoke(isInMinigame);
         Debug.Log("RaisePlayerEnterMinigame: "+isInMinigame);
+    }
+
+    public static void RaiseDialogBoxStateChanged(bool isOpen)
+    {
+        OnDialogBoxStateChanged?.Invoke(isOpen);
+        Debug.Log("RaiseDialogBoxStateChanged: " + isOpen);
     }
 }

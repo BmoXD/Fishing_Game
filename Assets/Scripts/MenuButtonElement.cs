@@ -38,7 +38,6 @@ public class MenuButtonElement : InteractiveUIElement
             // Direct open if we can't find the action name
             UIManager.Instance.OpenPanel(targetPanel);
         }
-        UIManager.Instance.ShowDialog("Test", "adsadadsadaddadadadadadadad");
     }
 
     // Find the input action name for this panel

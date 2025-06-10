@@ -151,8 +151,8 @@ Material:
     - _TessMax: 25
     - _TessMaxDisp: 25
     - _TessMin: 10
-    - _TessPhongStrength: 0.5
-    - _TessValue: 16
+    - _TessPhongStrength: 0
+    - _TessValue: 4
     - _Timescale: 0.097826086
     - _ToggleSwitch0: 0
     - _WaveAmplitude: 0.68

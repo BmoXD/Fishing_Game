@@ -1,9 +1,10 @@
 using UnityEngine;
 
-public class NPCInteraction : MonoBehaviour, IInteractable
+public class SomeInteractableObject : MonoBehaviour, IInteractable
 {
-    public void Interact(GameObject interactor)
+    public void Interact()
     {
-        UIManager.Instance.ShowDialog("Interaction", "This is a test lololololololo! Blah blah Blah blah Blah blah Blah blah Blah blah Blah blah Blah blah Blah blah Blah blah Blah blah Blah blah ");
+        UIManager.Instance.ShowDialog("Test","Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah");
+        Debug.Log("Interacted with " + gameObject.name);
     }
 }

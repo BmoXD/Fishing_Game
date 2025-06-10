@@ -1,3 +1,4 @@
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
@@ -23,6 +24,8 @@ public class FishingRod : ItemFunctionality
     private GameObject aimObject;
     private GameObject aimPlane;
     private Transform playerTransform;
+    private ThirdPersonController playerController;
+
     private bool isCharging = false;
     private float currentAimDistance = 0f;
     private bool isFishing = false;
@@ -36,11 +39,17 @@ public class FishingRod : ItemFunctionality
     private float biteTimerMax = 0f;
     private bool minigameActive = false;
     private Item caughtItem;
+    private InventoryItem caughtInvItem;
     private float caughtWeight = 0f;
     private WaterVolume currentWaterVolume;
     private UIManager uiManager;
 
     private ParticleSystem fishOnParticleInstance;
+
+    private Quaternion originalPlayerRotation;
+    private Vector3 originalCameraPosition;
+    private Quaternion originalCameraRotation;
+    private float originalCameraDistance;
 
     public override void Use()
     {
@@ -67,17 +76,22 @@ public class FishingRod : ItemFunctionality
         }
 
         playerTransform = player.transform;
+        playerController = player.GetComponent<ThirdPersonController>();
 
-        GameObject socketObject = GameObject.FindGameObjectWithTag("Socket");
-        if (socketObject == null)
+        GameObject[] sockets = GameObject.FindGameObjectsWithTag("Socket");
+        GameObject socketObject = null;
+        foreach (var obj in sockets)
         {
-            Debug.LogError("Socket object not found!");
-            return;
+            if (obj.name == "ItemSocket")
+            {
+                socketObject = obj;
+                break;
+            }
         }
 
-        if (!socketObject.transform.IsChildOf(player.transform))
+        if (socketObject == null)
         {
-            Debug.LogError("Socket is not a child of the player!");
+            Debug.LogError("ItemSocket object not found!");
             return;
         }
 
@@ -149,7 +163,7 @@ public class FishingRod : ItemFunctionality
                 minigame.onMinigameFail.RemoveListener(OnMinigameFail);
             }
         }
-        PlayerEvents.RaiseFishingStateChanged(false);
+        PlayerEvents.RaisePlayerFreeze(false);
     }
 
     private void Update()
@@ -241,7 +255,8 @@ public class FishingRod : ItemFunctionality
                 if (uiManager != null)
                 {
                     // You can pass custom values or use fields
-                    uiManager.OpenMinigamePanel(leftDriftIntensity: 1.2f + (caughtWeight / 1000f) * 2f, rightPushIntensity: 0.5f + (caughtWeight / 1000f) * 3f);
+                    // uiManager.OpenMinigamePanel(leftDriftIntensity: 1.2f + (caughtWeight / 1000f) * 2f, rightPushIntensity: 0.5f + (caughtWeight / 1000f) * 3f);
+                    uiManager.OpenMinigamePanel(leftDriftIntensity: 1.2f, rightPushIntensity: 0.5f);
                 }
                 return;
             }
@@ -259,7 +274,7 @@ public class FishingRod : ItemFunctionality
             {
                 StartCoroutine(AnimateBobberBackAndCleanup(spawnedBobber.transform, spawnedBobber.transform.position, rodTip.position, 1.0f));
             }
-            PlayerEvents.RaiseFishingStateChanged(false);
+            PlayerEvents.RaisePlayerFreeze(false);
             return;
         }
 
@@ -302,7 +317,7 @@ public class FishingRod : ItemFunctionality
             if (playerAnimator != null)
                 playerAnimator.SetBool("Fishing", true);
             isFishing = true;
-            PlayerEvents.RaiseFishingStateChanged(true);
+            PlayerEvents.RaisePlayerFreeze(true);
 
             // Spawn and animate bobber
             if (bobberPrefab != null && rodTip != null)
@@ -338,7 +353,7 @@ public class FishingRod : ItemFunctionality
         CleanupAimObjects();
 
         if (isFishing == false)
-            PlayerEvents.RaiseFishingStateChanged(false);
+            PlayerEvents.RaisePlayerFreeze(false);
     }
 
     // Coroutine to animate bobber in an arc
@@ -412,12 +427,34 @@ public class FishingRod : ItemFunctionality
 
         if (caughtItem != null)
         {
-            InventoryItem invItem = InventoryManager.Instance.AddItemAsNewInstance(caughtItem);
-            if (invItem != null)
+            caughtInvItem = InventoryManager.Instance.AddItemAsNewInstance(caughtItem);
+            if (caughtInvItem != null)
             {
-                invItem.Weight = caughtWeight;
+                caughtInvItem.Weight = caughtWeight;
             }
             Debug.Log($"You caught: {caughtItem.itemName} ({caughtWeight:0.##}g)");
+
+            // Save original rotations/positions
+            originalPlayerRotation = playerTransform.rotation;
+            // if (playerController != null && playerController.CinemachineCamera != null)
+            // {
+            //     originalCameraPosition = playerController.CinemachineCamera.transform.position;
+            //     originalCameraRotation = playerController.CinemachineCamera.transform.rotation;
+            // }
+
+            // Rotate player to face camera
+            FacePlayerToCamera();
+
+            // Move/zoom camera in
+            ZoomCameraToPlayer();
+
+            // Show dialog
+            float weightKg = caughtWeight / 1000f;
+            string message = $"Nice catch! You caught {caughtItem.itemName}! It weighs {weightKg:0.###} kg.\n{caughtItem.description}";
+            UIManager.Instance.ShowDialog("Catch!", message);
+
+            // Listen for dialog close to restore camera/player
+            PlayerEvents.OnDialogBoxStateChanged += RestoreCameraAndPlayer;
         }
         else
         {
@@ -466,7 +503,7 @@ public class FishingRod : ItemFunctionality
             fishOnParticleInstance = null;
         }
 
-        PlayerEvents.RaiseFishingStateChanged(false);
+        PlayerEvents.RaisePlayerFreeze(false);
     }
 
     private void CleanupAimObjects()
@@ -482,5 +519,74 @@ public class FishingRod : ItemFunctionality
             aimPlane = null;
         }
         lastAimHit = new RaycastHit();
+    }
+
+    private void FacePlayerToCamera()
+    {
+        originalPlayerRotation = playerTransform.rotation;
+        if (playerController != null && playerController.CinemachineCamera != null)
+        {
+            Vector3 cameraPos = playerController.CinemachineCamera.transform.position;
+            Vector3 lookDir = (cameraPos - playerTransform.position).normalized;
+            lookDir.y = 0; // Keep only horizontal rotation
+            if (lookDir.sqrMagnitude > 0.01f)
+                LeanTween.rotate(playerTransform.gameObject, Quaternion.LookRotation(lookDir).eulerAngles, 0.5f).setEaseOutCubic();
+        }
+        InventoryManager.Instance.SetEquippedItem(caughtInvItem);
+    }
+
+    private void ZoomCameraToPlayer()
+    {
+        if (playerController != null && playerController.CinemachineCamera != null)
+        {
+            var camFollowComp = playerController._cinemachineFollowComponent;
+
+            originalCameraDistance = camFollowComp.CameraDistance;
+            float targetDistance = 1.4f;
+            float duration = 0.5f;
+
+            // Animate CameraDistance using LeanTween
+            LeanTween.value(
+                camFollowComp.gameObject,
+                camFollowComp.CameraDistance,
+                targetDistance,
+                duration
+            ).setEaseOutCubic()
+            .setOnUpdate((float val) =>
+            {
+                camFollowComp.CameraDistance = val;
+            });
+        }
+    }
+
+    private void RestoreCameraAndPlayer(bool dialogBoxState)
+    {
+        if (dialogBoxState) return;
+
+        // Restore player rotation smoothly
+        LeanTween.rotate(playerTransform.gameObject, originalPlayerRotation.eulerAngles, 0.5f).setEaseOutCubic();
+
+        if (playerController != null && playerController.CinemachineCamera != null)
+        {
+            var camFollowComp = playerController._cinemachineFollowComponent;
+            float duration = 0.25f;
+
+            // Animate CameraDistance toward whatever the current target is
+            LeanTween.value(
+                camFollowComp.gameObject,
+                camFollowComp.CameraDistance,
+                playerController.TargetCameraDistance,
+                duration
+            ).setEaseOutCubic()
+            .setOnUpdate((float val) =>
+            {
+                Debug.Log("CameraDistance: " + camFollowComp.CameraDistance + " | val: "+ val + "playerController.TargetCameraDistance: "+ playerController.TargetCameraDistance);
+                camFollowComp.CameraDistance = val;
+            });
+        }
+
+        InventoryManager.Instance.EquipPreviousEquippedItem();
+        // Unsubscribe to avoid memory leaks
+        PlayerEvents.OnDialogBoxStateChanged -= RestoreCameraAndPlayer;
     }
 }

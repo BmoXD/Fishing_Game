@@ -10,12 +10,14 @@ public class DialogBox : MonoBehaviour
     [SerializeField] private float fadeDuration = 0.3f;
 
     private Coroutine typewriterCoroutine;
-    private Coroutine fadeCoroutine;
     private CanvasGroup canvasGroup;
     private PlayerControls controls;
     private bool isTypewriterActive = false;
     private bool isFadeActive = false;
     private string fullMessage = "";
+    private LTDescr fadeTween; // Add this field to track the LeanTween tween
+    private RectTransform transform;
+    private Vector2 originalPos;
 
     private void Awake()
     {
@@ -40,14 +42,17 @@ public class DialogBox : MonoBehaviour
     public void Show(string title, string message)
     {
         gameObject.SetActive(true);
+        PlayerEvents.RaiseDialogBoxStateChanged(true);
 
         if (titleText != null)
             titleText.text = title;
 
         if (typewriterCoroutine != null)
             StopCoroutine(typewriterCoroutine);
-        if (fadeCoroutine != null)
-            StopCoroutine(fadeCoroutine);
+
+        // Cancel any running LeanTween fade
+        if (fadeTween != null)
+            LeanTween.cancel(gameObject);
 
         fullMessage = message;
         isTypewriterActive = false;
@@ -56,18 +61,37 @@ public class DialogBox : MonoBehaviour
         if (messageText != null)
             typewriterCoroutine = StartCoroutine(TypewriterEffect(message));
         if (canvasGroup != null)
-            fadeCoroutine = StartCoroutine(FadeCanvasGroup(0f, 1f, fadeDuration));
+        {
+            canvasGroup.alpha = 0f;
+            fadeTween = LeanTween.alphaCanvas(canvasGroup, 1f, fadeDuration)
+                .setIgnoreTimeScale(true)
+                .setOnStart(() => isFadeActive = true)
+                .setOnComplete(() => isFadeActive = false);
+            
+            float animateDist = 10;
+            transform = gameObject.GetComponent<RectTransform>();
+            originalPos = transform.anchoredPosition;
+            Vector2 startPos = transform.anchoredPosition;
+            startPos.y -= animateDist;
+            transform.anchoredPosition = startPos;
+
+            LeanTween.moveY(transform, transform.anchoredPosition.y + animateDist, 0.5f).setIgnoreTimeScale(true);
+        }
     }
 
     public void Close()
     {
         if (typewriterCoroutine != null)
             StopCoroutine(typewriterCoroutine);
-        if (fadeCoroutine != null)
-            StopCoroutine(fadeCoroutine);
+
+        // Cancel any running LeanTween fade
+        if (fadeTween != null)
+            LeanTween.cancel(gameObject);
+
         if (canvasGroup != null)
             canvasGroup.alpha = 0f;
         gameObject.SetActive(false);
+        PlayerEvents.RaiseDialogBoxStateChanged(false);
     }
 
     private IEnumerator TypewriterEffect(string message)
@@ -83,32 +107,17 @@ public class DialogBox : MonoBehaviour
         isTypewriterActive = false;
     }
 
-    private IEnumerator FadeCanvasGroup(float from, float to, float duration)
-    {
-        isFadeActive = true;
-        float elapsed = 0f;
-        canvasGroup.alpha = from;
-        while (elapsed < duration)
-        {
-            elapsed += Time.unscaledDeltaTime;
-            canvasGroup.alpha = Mathf.Lerp(from, to, elapsed / duration);
-            if (!isFadeActive) yield break;
-            yield return null;
-        }
-        canvasGroup.alpha = to;
-        isFadeActive = false;
-    }
-
     private void OnClickPerformed(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
         // If fade or typewriter is active, skip both
         if (isFadeActive || isTypewriterActive)
         {
             isFadeActive = false;
-            if (fadeCoroutine != null)
-                StopCoroutine(fadeCoroutine);
+            if (fadeTween != null)
+                LeanTween.cancel(gameObject);
             if (canvasGroup != null)
                 canvasGroup.alpha = 1f;
+            transform.anchoredPosition = originalPos;
 
             isTypewriterActive = false;
             if (typewriterCoroutine != null)

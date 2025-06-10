@@ -9,6 +9,7 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private List<InventoryItem> inventoryItems = new List<InventoryItem>();
 
     [SerializeField] private InventoryItem equippedItem;
+    private InventoryItem previousEquippedItem;
     // Event for when equipped item changes
     public delegate void EquippedItemChangedHandler(InventoryItem newItem);
     public event EquippedItemChangedHandler OnEquippedItemChanged;
@@ -36,6 +37,8 @@ public class InventoryManager : MonoBehaviour
         // Only update if there's a change
         if (equippedItem != item)
         {
+            previousEquippedItem = equippedItem; // Save the previous equipped item
+
             equippedItem = item;
             
             // Remove any previously spawned equipped item
@@ -73,6 +76,16 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+    public bool EquipPreviousEquippedItem()
+    {
+        if (previousEquippedItem != null)
+        {
+            SetEquippedItem(previousEquippedItem);
+            return true;
+        }
+        return false;
+    }
+
     // Add item to inventory (with unlimited slots)
     public bool AddItem(Item item, int quantity = 1)
     {
@@ -80,7 +93,7 @@ public class InventoryManager : MonoBehaviour
 
         // Check if item already exists
         InventoryItem existingItem = GetInventoryItem(item);
-        
+
         if (existingItem != null)
         {
             existingItem.AddQuantity(quantity);

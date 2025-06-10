@@ -53,11 +53,12 @@ public class ThirdPersonController : MonoBehaviour
     private float _cinemachineTargetYaw;
     private float _cinemachineTargetPitch;
     private float _currentCameraDistance;
-    private Cinemachine3rdPersonFollow _cinemachineFollowComponent;
+    public Cinemachine3rdPersonFollow _cinemachineFollowComponent;
     private float _defaultFOV;
     private float _targetFOV;
     private Coroutine _fovChangeCoroutine;
     private bool _wasSprintingLastFrame = false;
+    public float TargetCameraDistance { get; set; }
 
     // player
     private float _speed;
@@ -95,6 +96,7 @@ public class ThirdPersonController : MonoBehaviour
 
     // INTERACTION SYSTEM
     public float interactRange = 2f; // How far the player can interact
+    private InteractionPoint _activeInteractionPoint;
 
     private void Awake()
     {
@@ -121,7 +123,8 @@ public class ThirdPersonController : MonoBehaviour
             _cinemachineFollowComponent = CinemachineCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
             if (_cinemachineFollowComponent != null)
             {
-                _currentCameraDistance = _cinemachineFollowComponent.CameraDistance;
+                //_currentCameraDistance = _cinemachineFollowComponent.CameraDistance;
+                TargetCameraDistance = _cinemachineFollowComponent.CameraDistance;
             }
             else
             {
@@ -183,7 +186,7 @@ public class ThirdPersonController : MonoBehaviour
             InventoryManager.Instance.OnEquippedItemChanged += HandleEquippedItemChanged;
         }
 
-        PlayerEvents.OnFishingStateChanged += HandleFishingStateChanged;
+        PlayerEvents.OnFreezePlayer += HandleFreezePlayer;
 
         _playerControls.Player.Use.performed += OnUsePerformed;
     }
@@ -202,7 +205,7 @@ public class ThirdPersonController : MonoBehaviour
             InventoryManager.Instance.OnEquippedItemChanged -= HandleEquippedItemChanged;
         }
 
-        PlayerEvents.OnFishingStateChanged -= HandleFishingStateChanged;
+        PlayerEvents.OnFreezePlayer -= HandleFreezePlayer;
         
         _playerControls.Disable();
         
@@ -210,7 +213,7 @@ public class ThirdPersonController : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
-    private void HandleFishingStateChanged(bool isFishing)
+    private void HandleFreezePlayer(bool isFishing)
     {
         // Disable player movement controls, but keep camera movement enabled
         _movementEnabled = !isFishing;
@@ -257,9 +260,20 @@ public class ThirdPersonController : MonoBehaviour
     {
         //Debug.Log("Before HandlePlayerControlsChanged: "+!enabled+" _playerControlsEnabled: "+ _playerControlsEnabled);
         _playerControlsEnabled = !enabled;
+
+        //Disabling camera controls
+        EnableCameraControl = !enabled;
+        // If disabling controls (i.e., menu opened), reset camera look state and show cursor
+        if (enabled)
+        {
+            _isRightMousePressed = false;
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+        }
+        
         //Debug.Log("After HandlePlayerControlsChanged: "+!enabled+" _playerControlsEnabled: "+ _playerControlsEnabled);
 
-        if(enabled && _hasAnimator)
+        if (enabled && _hasAnimator)
         {
             _animator.SetFloat("Speed", 0f);
         }
@@ -332,28 +346,14 @@ public class ThirdPersonController : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
     }
 
-    private void OnUsePerformed(InputAction.CallbackContext ctx)
+    public void SetActiveInteractionPoint(InteractionPoint point)
     {
-        Debug.Log("Use key pressed");
-        TryInteract();
+        _activeInteractionPoint = point;
     }
 
-    private void TryInteract()
+    private void OnUsePerformed(InputAction.CallbackContext ctx)
     {
-        // Check for nearby interactables (sphere overlap)
-        Collider[] hits = Physics.OverlapSphere(transform.position, interactRange);
-        foreach (var hit in hits)
-        {
-            // Try to get IInteractable from the collider, its parent, or its children
-            var interactable = hit.GetComponent<IInteractable>()
-                ?? hit.GetComponentInParent<IInteractable>()
-                ?? hit.GetComponentInChildren<IInteractable>();
-            if (interactable != null)
-            {
-                interactable.Interact(gameObject);
-                break;
-            }
-        }
+        _activeInteractionPoint?.TryInteract();
     }
 
     private void AssignAnimationIDs()
@@ -424,15 +424,18 @@ public class ThirdPersonController : MonoBehaviour
         {
             // Read scroll wheel input
             float scrollValue = _playerControls.Player.Scroll.ReadValue<float>();
-            
+
             if (Mathf.Abs(scrollValue) > 0.01f)
             {
                 // Calculate new camera distance
-                _currentCameraDistance -= scrollValue * ZoomSpeed * Time.deltaTime * 10f;
-                _currentCameraDistance = Mathf.Clamp(_currentCameraDistance, MinCameraDistance, MaxCameraDistance);
-                
-                // Apply to cinemachine
-                _cinemachineFollowComponent.CameraDistance = _currentCameraDistance;
+                // _currentCameraDistance -= scrollValue * ZoomSpeed * Time.deltaTime * 10f;
+                // _currentCameraDistance = Mathf.Clamp(_currentCameraDistance, MinCameraDistance, MaxCameraDistance);
+
+                // // Apply to cinemachine
+                // _cinemachineFollowComponent.CameraDistance = _currentCameraDistance;
+                TargetCameraDistance -= scrollValue * ZoomSpeed * Time.deltaTime * 10f;
+                TargetCameraDistance = Mathf.Clamp(TargetCameraDistance, MinCameraDistance, MaxCameraDistance);
+                _cinemachineFollowComponent.CameraDistance = TargetCameraDistance;
             }
         }
     }

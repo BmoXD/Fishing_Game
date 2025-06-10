@@ -20,6 +20,7 @@ public class Item : ScriptableObject
     public float weight;
     public ItemType type;
 
+    [Header ("Weight settings. Weight is in grams")]
     public float basePricePerGram = 1f; // Price for 1 gram
     public float minWeight = 1f;        // Minimum possible weight
     public float maxWeight = 1000f;     // Maximum possible weight

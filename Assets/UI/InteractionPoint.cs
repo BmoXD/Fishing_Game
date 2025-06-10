@@ -2,17 +2,17 @@ using UnityEngine;
 using UnityEngine.UI;
 using Cinemachine;
 
-public class InteractionPoint : MonoBehaviour, IInteractable
+public class InteractionPoint : MonoBehaviour
 {
     public GameObject uiPrefab; // Prefab to instantiate as UI element
     public Vector2 elementSize = new Vector2(50, 50); // Optional: override size
 
-    // Optional: assign a target for interaction (e.g. NPC script)
-    public MonoBehaviour interactionTarget;
-
     private Canvas uiCanvas;
     private RectTransform uiElementRect;
     private GameObject uiElementInstance;
+    private IInteractable interactable;
+    private bool isPlayerNear = false;
+    private bool isMenuOpen = false;
 
     void Start()
     {
@@ -32,18 +32,17 @@ public class InteractionPoint : MonoBehaviour, IInteractable
             return;
         }
 
-        // Instantiate the prefab as a child of the canvas
-        uiElementInstance = Instantiate(uiPrefab, uiCanvas.transform);
-        uiElementRect = uiElementInstance.GetComponent<RectTransform>();
-        if (uiElementRect != null)
+        interactable = GetComponent<IInteractable>();
+        if (interactable == null)
         {
-            uiElementRect.sizeDelta = elementSize;
+            Debug.LogWarning("No IInteractable found on " + gameObject.name);
         }
     }
 
     void OnEnable()
     {
         CinemachineCore.CameraUpdatedEvent.AddListener(OnCameraUpdated);
+        PlayerEvents.OnPlayerEnterMenu += HandleEnterMenu;
     }
 
     void OnDisable()
@@ -51,17 +50,66 @@ public class InteractionPoint : MonoBehaviour, IInteractable
         CinemachineCore.CameraUpdatedEvent.RemoveListener(OnCameraUpdated);
     }
 
-    public void Interact(GameObject interactor)
+    private void HandleEnterMenu(bool inMenu)
     {
-        // If a target is set and implements IInteractable, delegate to it
-        if (interactionTarget is IInteractable target && target != this)
+        isMenuOpen = inMenu;
+
+        // Hide the UI element if menu is open
+        if (uiElementInstance != null)
+            uiElementInstance.SetActive(!isMenuOpen);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
         {
-            target.Interact(interactor);
+            isPlayerNear = true;
+
+            // Instantiate the UI element if it doesn't exist
+            if (uiElementInstance == null && uiPrefab != null && uiCanvas != null)
+            {
+                uiElementInstance = Instantiate(uiPrefab, uiCanvas.transform);
+                uiElementRect = uiElementInstance.GetComponent<RectTransform>();
+                if (uiElementRect != null)
+                {
+                    uiElementRect.sizeDelta = elementSize;
+                }
+                // Move to top of UI hierarchy
+                uiElementInstance.transform.SetAsLastSibling();
+            }
+
+            if (uiElementInstance != null) uiElementInstance.SetActive(true);
+
+            // Register with player
+            other.GetComponent<ThirdPersonController>()?.SetActiveInteractionPoint(this);
         }
-        else
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
         {
-            // Fallback: interact with self
-            Debug.Log($"{gameObject.name} was interacted with by {interactor.name}");
+            isPlayerNear = false;
+
+            // Destroy the UI element when the player leaves
+            if (uiElementInstance != null)
+            {
+                Destroy(uiElementInstance);
+                uiElementInstance = null;
+                uiElementRect = null;
+            }
+
+            // Unregister with player
+            other.GetComponent<ThirdPersonController>()?.SetActiveInteractionPoint(null);
+        }
+    }
+
+    // Call this when the player presses the use key and is in range
+    public void TryInteract()
+    {
+        if (interactable != null && isPlayerNear && !isMenuOpen)
+        {
+            interactable.Interact();
         }
     }
 
@@ -71,8 +119,8 @@ public class InteractionPoint : MonoBehaviour, IInteractable
         // Convert world position to screen point
         Vector3 screenPos = Camera.main.WorldToScreenPoint(transform.position);
 
-        // If behind camera, hide the element
-        if (screenPos.z < 0)
+        // If behind camera or menu is open, hide the element
+        if (screenPos.z < 0 || isMenuOpen)
         {
             if (uiElementInstance != null) uiElementInstance.SetActive(false);
         }
@@ -81,6 +129,7 @@ public class InteractionPoint : MonoBehaviour, IInteractable
             if (uiElementInstance != null)
             {
                 uiElementInstance.SetActive(true);
+                uiElementInstance.transform.SetAsFirstSibling();
                 uiElementRect.position = screenPos;
             }
         }
