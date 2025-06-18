@@ -18,10 +18,10 @@ MonoBehaviour:
   prefab: {fileID: 9220957584504827868, guid: 58e0d543c7d5c1c48b10e37ffb05fce2, type: 3}
   description: It's o koi
   weight: 0
+  sellable: 1
   type: 0
-  basePricePerGram: 0.08
+  basePricePerGram: 0.1
   minWeight: 100
   maxWeight: 16000
   deleteOnConsume: 0
-  functionalityScript: {fileID: 0}
   onScreenHints: []

@@ -18,9 +18,10 @@ public class Item : ScriptableObject
     public GameObject prefab;
     [TextArea] public string description;
     public float weight;
+    public bool sellable = false;
     public ItemType type;
 
-    [Header ("Weight settings. Weight is in grams")]
+    [Header("Weight settings. Weight is in grams")]
     public float basePricePerGram = 1f; // Price for 1 gram
     public float minWeight = 1f;        // Minimum possible weight
     public float maxWeight = 1000f;     // Maximum possible weight
@@ -30,7 +31,7 @@ public class Item : ScriptableObject
     public bool DeleteOnConsume => type == ItemType.Consumable && deleteOnConsume;
 
     // Attach a script as MonoBehaviour (e.g. FishingRodFunctionality.cs)
-    public MonoScript functionalityScript;
+    //public MonoScript functionalityScript;
 
     public List<string> onScreenHints;
 

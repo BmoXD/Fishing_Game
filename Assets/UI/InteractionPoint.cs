@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Cinemachine;
+using UnityEngine.Events;
 
 public class InteractionPoint : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class InteractionPoint : MonoBehaviour
     private IInteractable interactable;
     private bool isPlayerNear = false;
     private bool isMenuOpen = false;
+
+    public UnityEvent onInteracted;
 
     void Start()
     {
@@ -111,6 +114,8 @@ public class InteractionPoint : MonoBehaviour
         {
             interactable.Interact();
         }
+        Debug.Log("Interacted!");
+        onInteracted?.Invoke();
     }
 
     void OnCameraUpdated(CinemachineBrain brain)

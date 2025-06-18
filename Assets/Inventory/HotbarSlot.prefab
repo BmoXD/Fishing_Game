@@ -37,22 +37,22 @@ PrefabInstance:
     - target: {fileID: 410692910572346703, guid: 06b1804ef0bf1d4429fcb467a26764ff,
         type: 3}
       propertyPath: m_SizeDelta.x
-      value: 132.6
+      value: 3.9785
       objectReference: {fileID: 0}
     - target: {fileID: 410692910572346703, guid: 06b1804ef0bf1d4429fcb467a26764ff,
         type: 3}
       propertyPath: m_SizeDelta.y
-      value: 132.5972
+      value: 3.9773
       objectReference: {fileID: 0}
     - target: {fileID: 410692910572346703, guid: 06b1804ef0bf1d4429fcb467a26764ff,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0.0002408
+      value: 0.00024032593
       objectReference: {fileID: 0}
     - target: {fileID: 410692910572346703, guid: 06b1804ef0bf1d4429fcb467a26764ff,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.00024843
+      value: -0.00024795532
       objectReference: {fileID: 0}
     - target: {fileID: 2112849542503738724, guid: 06b1804ef0bf1d4429fcb467a26764ff,
         type: 3}
@@ -260,6 +260,7 @@ MonoBehaviour:
     bookmarkSlot: 0
     customWeight: 0
   slotIndex: 0
+  showEquipItemTooltip: 0
   bookmarkText: {fileID: 6439310521359828498}
   quantityText: {fileID: 4657071022986072371}
   hotbarIndex: 0

@@ -42,7 +42,7 @@ public class InventoryUIManager : MonoBehaviour
 
         RefreshInventory();
     }
-    
+
     private void OnEnable()
     {
         // Subscribe to inventory events
@@ -54,6 +54,8 @@ public class InventoryUIManager : MonoBehaviour
         controls = new PlayerControls();
         controls.UI.HotbarSlots.Enable();
         controls.UI.HotbarSlots.performed += OnHotbarSlots;
+
+        RefreshInventory();
         
         //_1 = _playerInput.actions["HotbarSlots"].bindings[1];
     }
@@ -71,12 +73,12 @@ public class InventoryUIManager : MonoBehaviour
         // If item is already bookmarked to this slot, unbookmark it
         if (itemToBookmark.BookmarkSlot == inputValue)
         {
-            inventoryManager.SetBookmark(itemToBookmark.ItemData, 0); // 0 means no bookmark
+            inventoryManager.SetBookmark(itemToBookmark, 0); // 0 means no bookmark
         }
         else
         {
             // Otherwise bookmark it to the selected slot
-            inventoryManager.SetBookmark(itemToBookmark.ItemData, inputValue);
+            inventoryManager.SetBookmark(itemToBookmark, inputValue);
         }
     }
     
@@ -135,28 +137,30 @@ public class InventoryUIManager : MonoBehaviour
     {
         if (inventoryManager == null || slotsContainer == null || slotPrefab == null)
             return;
-        
-        // Get all inventory items
-        List<InventoryItem> items = inventoryManager.GetAllItems();
-        
-        // Create/update slots as needed
-        EnsureSlotsCount(items.Count);
-        
-        // Assign items to slots
-        for (int i = 0; i < slots.Count; i++)
+
+        // Remove all existing slots and clear the list
+        foreach (var slot in slots)
         {
-            if (i < items.Count)
+            Debug.Log(slot);
+            if (slot != null)
             {
-                slots[i].SetItem(items[i]);
-            }
-            else
-            {
-                slots[i].ClearSlot();
+                Debug.Log("Deleting: "+slot);
+                Destroy(slot.gameObject);
             }
         }
-        
-        // Remove excess slots
-        RemoveExcessSlots(items.Count);
+        slots.Clear();
+        hoveredSlot = null;
+        selectedSlot = null;
+
+        // Get all inventory items
+        List<InventoryItem> items = inventoryManager.GetAllItems();
+
+        // Create new slots for each item
+        for (int i = 0; i < items.Count; i++)
+        {
+            InventorySlot slot = CreateSlot();
+            slot.SetItem(items[i]);
+        }
     }
 
     // Remove slots that exceed the required count
@@ -227,7 +231,7 @@ public class InventoryUIManager : MonoBehaviour
             // You can add additional functionality here
         }
     }
-    
+
     // Called when a slot is clicked
     public void OnSlotClicked(InventorySlot slot)
     {
@@ -236,7 +240,7 @@ public class InventoryUIManager : MonoBehaviour
         {
             selectedSlot.SetClickedState(false);
         }
-        
+
         // Toggle selection
         if (selectedSlot == slot)
         {
@@ -248,7 +252,9 @@ public class InventoryUIManager : MonoBehaviour
             slot.SetClickedState(true);
             selectedSlot = slot;
         }
-        
+
+        InventoryManager.Instance.SetEquippedItem(slot.Item);
+        UIManager.Instance.CloseAllPanels();
         // You can add additional click functionality here
     }
     

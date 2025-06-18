@@ -425,7 +425,7 @@ Shader "Exclimation Mark"
 
 				float2 texCoord17 = IN.ase_texcoord4.xy * float2( 1,1 ) + float2( 0,0 );
 				float mulTime12 = _TimeParameters.x * 35.0;
-				float mulTime23 = _TimeParameters.x * 2.0;
+				float mulTime23 = _TimeParameters.x * 3.0;
 				float cos16 = cos( ( sin( mulTime12 ) * ( sin( mulTime23 ) * 0.35 ) ) );
 				float sin16 = sin( ( sin( mulTime12 ) * ( sin( mulTime23 ) * 0.35 ) ) );
 				float2 rotator16 = mul( texCoord17 - float2( 0.5,0.5 ) , float2x2( cos16 , -sin16 , sin16 , cos16 )) + float2( 0.5,0.5 );
@@ -713,7 +713,7 @@ Shader "Exclimation Mark"
 
 				float2 texCoord17 = IN.ase_texcoord2.xy * float2( 1,1 ) + float2( 0,0 );
 				float mulTime12 = _TimeParameters.x * 35.0;
-				float mulTime23 = _TimeParameters.x * 2.0;
+				float mulTime23 = _TimeParameters.x * 3.0;
 				float cos16 = cos( ( sin( mulTime12 ) * ( sin( mulTime23 ) * 0.35 ) ) );
 				float sin16 = sin( ( sin( mulTime12 ) * ( sin( mulTime23 ) * 0.35 ) ) );
 				float2 rotator16 = mul( texCoord17 - float2( 0.5,0.5 ) , float2x2( cos16 , -sin16 , sin16 , cos16 )) + float2( 0.5,0.5 );
@@ -967,7 +967,7 @@ Shader "Exclimation Mark"
 
 				float2 texCoord17 = IN.ase_texcoord3.xy * float2( 1,1 ) + float2( 0,0 );
 				float mulTime12 = _TimeParameters.x * 35.0;
-				float mulTime23 = _TimeParameters.x * 2.0;
+				float mulTime23 = _TimeParameters.x * 3.0;
 				float cos16 = cos( ( sin( mulTime12 ) * ( sin( mulTime23 ) * 0.35 ) ) );
 				float sin16 = sin( ( sin( mulTime12 ) * ( sin( mulTime23 ) * 0.35 ) ) );
 				float2 rotator16 = mul( texCoord17 - float2( 0.5,0.5 ) , float2x2( cos16 , -sin16 , sin16 , cos16 )) + float2( 0.5,0.5 );
@@ -1202,7 +1202,7 @@ Shader "Exclimation Mark"
 
 				float2 texCoord17 = IN.ase_texcoord.xy * float2( 1,1 ) + float2( 0,0 );
 				float mulTime12 = _TimeParameters.x * 35.0;
-				float mulTime23 = _TimeParameters.x * 2.0;
+				float mulTime23 = _TimeParameters.x * 3.0;
 				float cos16 = cos( ( sin( mulTime12 ) * ( sin( mulTime23 ) * 0.35 ) ) );
 				float sin16 = sin( ( sin( mulTime12 ) * ( sin( mulTime23 ) * 0.35 ) ) );
 				float2 rotator16 = mul( texCoord17 - float2( 0.5,0.5 ) , float2x2( cos16 , -sin16 , sin16 , cos16 )) + float2( 0.5,0.5 );
@@ -1440,7 +1440,7 @@ Shader "Exclimation Mark"
 
 				float2 texCoord17 = IN.ase_texcoord.xy * float2( 1,1 ) + float2( 0,0 );
 				float mulTime12 = _TimeParameters.x * 35.0;
-				float mulTime23 = _TimeParameters.x * 2.0;
+				float mulTime23 = _TimeParameters.x * 3.0;
 				float cos16 = cos( ( sin( mulTime12 ) * ( sin( mulTime23 ) * 0.35 ) ) );
 				float sin16 = sin( ( sin( mulTime12 ) * ( sin( mulTime23 ) * 0.35 ) ) );
 				float2 rotator16 = mul( texCoord17 - float2( 0.5,0.5 ) , float2x2( cos16 , -sin16 , sin16 , cos16 )) + float2( 0.5,0.5 );
@@ -1700,7 +1700,7 @@ Shader "Exclimation Mark"
 
 				float2 texCoord17 = IN.ase_texcoord2.xy * float2( 1,1 ) + float2( 0,0 );
 				float mulTime12 = _TimeParameters.x * 35.0;
-				float mulTime23 = _TimeParameters.x * 2.0;
+				float mulTime23 = _TimeParameters.x * 3.0;
 				float cos16 = cos( ( sin( mulTime12 ) * ( sin( mulTime23 ) * 0.35 ) ) );
 				float sin16 = sin( ( sin( mulTime12 ) * ( sin( mulTime23 ) * 0.35 ) ) );
 				float2 rotator16 = mul( texCoord17 - float2( 0.5,0.5 ) , float2x2( cos16 , -sin16 , sin16 , cos16 )) + float2( 0.5,0.5 );
@@ -1748,11 +1748,11 @@ Shader "Exclimation Mark"
 }
 /*ASEBEGIN
 Version=19501
-Node;AmplifyShaderEditor.RangedFloatNode;22;-992,528;Inherit;False;Constant;_Float2;Float 1;1;0;Create;True;0;0;0;False;0;False;2;0;0;0;0;1;FLOAT;0
+Node;AmplifyShaderEditor.RangedFloatNode;22;-992,672;Inherit;False;Constant;_Float2;Float 1;1;0;Create;True;0;0;0;False;0;False;3;0;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;20;-1376,128;Inherit;False;Constant;_Float1;Float 1;1;0;Create;True;0;0;0;False;0;False;35;0;0;0;0;1;FLOAT;0
-Node;AmplifyShaderEditor.SimpleTimeNode;23;-1008,448;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SimpleTimeNode;23;-1008,592;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleTimeNode;12;-1376,48;Inherit;False;1;0;FLOAT;1;False;1;FLOAT;0
-Node;AmplifyShaderEditor.SinOpNode;24;-976,352;Inherit;False;1;0;FLOAT;0;False;1;FLOAT;0
+Node;AmplifyShaderEditor.SinOpNode;24;-976,352;Inherit;True;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SinOpNode;14;-1184,48;Inherit;True;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;25;-976,256;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0.35;False;1;FLOAT;0
 Node;AmplifyShaderEditor.TextureCoordinatesNode;17;-1072,-128;Inherit;False;0;-1;2;3;2;SAMPLER2D;;False;0;FLOAT2;1,1;False;1;FLOAT2;0,0;False;5;FLOAT2;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
@@ -1783,4 +1783,4 @@ WireConnection;10;1;16;0
 WireConnection;1;2;10;0
 WireConnection;1;3;10;4
 ASEEND*/
-//CHKSM=54D15C6B57996BEB0E91B643A5C3CE9337376998
+//CHKSM=2A50D305BFE53FC6B044CA7BFA90FB90FCBC8E16

@@ -29,6 +29,8 @@ public class UIManager : MonoBehaviour
     // References
     [SerializeField] private List<PanelInfo> panels = new List<PanelInfo>();
     [SerializeField] private GameObject basePanel;
+    [Header("Escape Panel")]
+    [SerializeField] private GameObject escapePanel;
 
     private bool isAnotherPanelOpen = false;
 
@@ -75,6 +77,8 @@ public class UIManager : MonoBehaviour
         playerControls.Enable();
         SetupInputListeners();
 
+        playerControls.UI.Escape.performed += OnEscape;
+
         if (fishingMinigame != null)
         {
             fishingMinigame.onMinigameSuccess.AddListener(CloseMinigamePanel);
@@ -88,11 +92,52 @@ public class UIManager : MonoBehaviour
         RemoveInputListeners();
         playerControls.Disable();
 
+        playerControls.UI.Escape.performed += OnEscape;
+
         if (fishingMinigame != null)
         {
             fishingMinigame.onMinigameSuccess.RemoveListener(CloseMinigamePanel);
             fishingMinigame.onMinigameFail.RemoveListener(CloseMinigamePanel);
         }
+    }
+
+    private void OnEscape(InputAction.CallbackContext context)
+    {
+        Debug.Log("A");
+        // If escape panel is open, close it and show base panel
+        if (escapePanel != null && escapePanel.activeSelf)
+        {
+            Debug.Log("B");
+            escapePanel.SetActive(false);
+            if (basePanel != null)
+                basePanel.SetActive(true);
+            PlayerOpensPanel(false);
+            return;
+        }
+
+        // If only base panel is open (all others closed), open escape panel
+        bool onlyBasePanelOpen = true;
+        foreach (var panelInfo in panels)
+        {
+            Debug.Log("C");
+            if (panelInfo.panel != basePanel && panelInfo.panel.activeSelf)
+            {
+                onlyBasePanelOpen = false;
+                break;
+            }
+        }
+        if (onlyBasePanelOpen && escapePanel != null)
+        {
+            Debug.Log("D");
+            escapePanel.SetActive(true);
+            if (basePanel != null)
+                basePanel.SetActive(false);
+            PlayerOpensPanel(true);
+            return;
+        }
+
+        // Otherwise, close all panels (default behavior)
+        CloseAllPanels();
     }
 
     private void Start()

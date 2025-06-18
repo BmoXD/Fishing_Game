@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
@@ -18,6 +20,9 @@ public class InventoryManager : MonoBehaviour
     public delegate void InventoryChangedHandler();
     public event InventoryChangedHandler OnInventoryChanged;
 
+    // Player money
+    [SerializeField] private int playerMoney = 0;
+
     private void Awake()
     {
         // Singleton setup
@@ -26,9 +31,10 @@ public class InventoryManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        
+
         Instance = this;
         DontDestroyOnLoad(gameObject);
+        LoadInventory();
     }
 
     // Called by HotbarManager when equipped item changes
@@ -58,17 +64,17 @@ public class InventoryManager : MonoBehaviour
                 // Tag it for easier management
                 spawnedItem.tag = "EquippedItem";
                 
-                // If the item has functionality, attach it to the spawned prefab
-                if (equippedItem.ItemData.functionalityScript != null)
-                {
-                    System.Type functionType = equippedItem.ItemData.functionalityScript.GetClass();
+                // // If the item has functionality, attach it to the spawned prefab
+                // if (equippedItem.ItemData.functionalityScript != null)
+                // {
+                //     System.Type functionType = equippedItem.ItemData.functionalityScript.GetClass();
                     
-                    if (functionType != null && typeof(ItemFunctionality).IsAssignableFrom(functionType))
-                    {
-                        // Add the functionality component to the spawned item
-                        spawnedItem.AddComponent(functionType);
-                    }
-                }
+                //     if (functionType != null && typeof(ItemFunctionality).IsAssignableFrom(functionType))
+                //     {
+                //         // Add the functionality component to the spawned item
+                //         spawnedItem.AddComponent(functionType);
+                //     }
+                // }
             }
             
             // Notify listeners about the change
@@ -148,32 +154,55 @@ public class InventoryManager : MonoBehaviour
         return inventoryItems.FindAll(i => i.ItemData.ItemID == item.ItemID).Count;
     }
 
-    // Remove item from inventory
-    public bool RemoveItem(Item item, int quantity = 1)
-    {
-        if (item == null || quantity <= 0) return false;
+    // // Remove item from inventory
+    // public bool RemoveItem(Item item, int quantity = 1)
+    // {
+    //     if (item == null || quantity <= 0) return false;
 
-        InventoryItem existingItem = GetInventoryItem(item);
+    //     InventoryItem existingItem = GetInventoryItem(item);
         
-        if (existingItem != null)
-        {
-            existingItem.RemoveQuantity(quantity);
+    //     if (existingItem != null)
+    //     {
+    //         existingItem.RemoveQuantity(quantity);
             
-            if (existingItem.Quantity <= 0)
+    //         if (existingItem.Quantity <= 0)
+    //         {
+    //             // Clear bookmark if item is removed
+    //             if (existingItem.BookmarkSlot > 0)
+    //             {
+    //                 existingItem.BookmarkSlot = 0;
+    //             }
+                
+    //             inventoryItems.Remove(existingItem);
+    //         }
+            
+    //         OnInventoryChanged?.Invoke();
+    //         return true;
+    //     }
+        
+    //     return false;
+    // }
+
+    // Remove a specific InventoryItem instance from inventory
+    public bool RemoveItem(InventoryItem inventoryItem, int quantity = 1)
+    {
+        if (inventoryItem == null || quantity <= 0) return false;
+
+        if (inventoryItems.Contains(inventoryItem))
+        {
+            inventoryItem.RemoveQuantity(quantity);
+            if (inventoryItem.Quantity <= 0)
             {
                 // Clear bookmark if item is removed
-                if (existingItem.BookmarkSlot > 0)
+                if (inventoryItem.BookmarkSlot > 0)
                 {
-                    existingItem.BookmarkSlot = 0;
+                    inventoryItem.BookmarkSlot = 0;
                 }
-                
-                inventoryItems.Remove(existingItem);
+                inventoryItems.Remove(inventoryItem);
             }
-            
             OnInventoryChanged?.Invoke();
             return true;
         }
-        
         return false;
     }
 
@@ -203,28 +232,33 @@ public class InventoryManager : MonoBehaviour
         return new List<InventoryItem>(inventoryItems);
     }
 
+    public List<InventoryItem> GetAllSellableItems()
+    {
+        List<InventoryItem> sellableItems = (from item in GetAllItems() where item.ItemData.sellable == true select item).ToList();
+        return sellableItems;
+    }
+
     // Bookmark management
-    public void SetBookmark(Item item, int slot)
+    public void SetBookmark(InventoryItem inventoryItem, int slot)
     {
         if (slot < 0 || slot > 5) return;
 
         // Clear existing item in this bookmark slot
         if (slot > 0)
         {
-            foreach (var inventoryItem in inventoryItems)
+            foreach (var item in inventoryItems)
             {
-                if (inventoryItem.BookmarkSlot == slot)
+                if (item.BookmarkSlot == slot)
                 {
-                    inventoryItem.BookmarkSlot = 0;
+                    item.BookmarkSlot = 0;
                 }
             }
         }
 
-        // Set bookmark for this item
-        InventoryItem targetItem = GetInventoryItem(item);
-        if (targetItem != null)
+        // Set bookmark for this inventory item
+        if (inventoryItem != null && inventoryItems.Contains(inventoryItem))
         {
-            targetItem.BookmarkSlot = slot;
+            inventoryItem.BookmarkSlot = slot;
             OnInventoryChanged?.Invoke();
         }
     }
@@ -236,66 +270,63 @@ public class InventoryManager : MonoBehaviour
         return inventoryItems.Find(i => i.BookmarkSlot == slot);
     }
 
-    // Use an item (basic implementation)
-    public bool UseItem(Item item)
+    // Use an item (now uses InventoryItem)
+    public bool UseItem(InventoryItem inventoryItem)
     {
-        if (!HasItem(item)) return false;
+        if (inventoryItem == null || !inventoryItems.Contains(inventoryItem)) return false;
+        var item = inventoryItem.ItemData;
+        if (item == null) return false;
         Debug.Log("Using item");
 
-        // Create and use item functionality component
-        if (item.functionalityScript != null)
-        {
-            System.Type functionType = item.functionalityScript.GetClass();
-            
-            if (functionType != null && typeof(ItemFunctionality).IsAssignableFrom(functionType))
-            {
-                GameObject tempObj = new GameObject("TempItemUse");
-                ItemFunctionality functionality = tempObj.AddComponent(functionType) as ItemFunctionality;
-                functionality.Use();
-                Destroy(tempObj);
-                
-                // Remove consumable items
-                if (item.DeleteOnConsume)
-                {
-                    RemoveItem(item, 1);
-                }
-                
-                return true;
-            }
-        }
-        
+        // // Create and use item functionality component
+        // if (item.functionalityScript != null)
+        // {
+        //     System.Type functionType = item.functionalityScript.GetClass();
+        //     if (functionType != null && typeof(ItemFunctionality).IsAssignableFrom(functionType))
+        //     {
+        //         GameObject tempObj = new GameObject("TempItemUse");
+        //         ItemFunctionality functionality = tempObj.AddComponent(functionType) as ItemFunctionality;
+        //         functionality.Use();
+        //         Destroy(tempObj);
+
+        //         // Remove consumable items
+        //         if (item.DeleteOnConsume)
+        //         {
+        //             RemoveItem(inventoryItem, 1);
+        //         }
+        //         return true;
+        //     }
+        // }
         return false;
     }
 
     // Set a custom weight for an item in inventory
-    public bool SetItemWeight(Item item, float weight)
+    public bool SetItemWeight(InventoryItem inventoryItem, float weight)
     {
-        if (item == null || weight < 0) return false;
-        
-        InventoryItem inventoryItem = GetInventoryItem(item);
-        if (inventoryItem != null)
+        if (inventoryItem == null || weight < 0) return false;
+
+        if (inventoryItems.Contains(inventoryItem))
         {
             inventoryItem.Weight = weight;
             OnInventoryChanged?.Invoke();
             return true;
         }
-        
+
         return false;
     }
 
-    // Reset an item's weight to its default value
-    public bool ResetItemWeight(Item item)
+    // Reset an inventory item's weight to its default value
+    public bool ResetItemWeight(InventoryItem inventoryItem)
     {
-        if (item == null) return false;
-        
-        InventoryItem inventoryItem = GetInventoryItem(item);
-        if (inventoryItem != null && inventoryItem.HasCustomWeight)
+        if (inventoryItem == null) return false;
+
+        if (inventoryItems.Contains(inventoryItem) && inventoryItem.HasCustomWeight)
         {
             inventoryItem.ResetWeight();
             OnInventoryChanged?.Invoke();
             return true;
         }
-        
+
         return false;
     }
 
@@ -331,16 +362,97 @@ public class InventoryManager : MonoBehaviour
         return equippedItem;
     }
 
+
+    // Add money to the player
+    public void AddMoney(int amount)
+    {
+        if (amount > 0)
+        {
+            playerMoney += amount;
+        }
+    }
+
+    // Remove money from the player (returns true if successful)
+    public bool RemoveMoney(int amount)
+    {
+        if (amount > 0 && playerMoney >= amount)
+        {
+            playerMoney -= amount;
+            return true;
+        }
+        return false;
+    }
+
+    public bool SellItem(InventoryItem inventoryItem)
+    {
+        int moneyToAdd = inventoryItem.getPrice();
+
+        if (RemoveItem(inventoryItem))
+        {
+            AddMoney(moneyToAdd);
+            OnInventoryChanged?.Invoke();
+            return true;
+        }
+
+        return false;
+    }
+
+    // Get the current amount of money
+    public int GetMoney()
+    {
+        return playerMoney;
+    }
+    
     // Save/Load inventory (basic implementation)
     public void SaveInventory()
     {
-        // TODO: Implement saving to PlayerPrefs, JSON, etc.
-        Debug.Log("Inventory save not implemented yet");
+        PlayerSaveSystem.SaveGame(playerMoney, inventoryItems);
+    }
+
+    // Helper to find an Item by ID from Resources
+    private static Item FindItemById(int id)
+    {
+        var allItems = Resources.LoadAll<Item>("");
+        foreach (var item in allItems)
+        {
+            if (item.ItemID == id)
+                return item;
+        }
+        return null;
     }
 
     public void LoadInventory()
     {
-        // TODO: Implement loading from saved data
-        Debug.Log("Inventory load not implemented yet");
+        var data = PlayerSaveSystem.LoadGame();
+        if (data == null)
+        {
+            // New game: add fishing rod
+            Item fishingRod = FindItemById(2); // Replace with your asset's name/path
+            if (fishingRod != null)
+            {
+                inventoryItems.Clear();
+                inventoryItems.Add(new InventoryItem(fishingRod, 1));
+            }
+            playerMoney = 0; // Or your default starting money
+            OnInventoryChanged?.Invoke();
+
+        }
+        else
+        {
+            playerMoney = data.playerMoney;
+            inventoryItems.Clear();
+            foreach (var itemData in data.inventoryItems)
+            {
+                Item item = FindItemById(itemData.itemId);
+                if (item != null)
+                {
+                    var invItem = new InventoryItem(item, itemData.quantity);
+                    invItem.Weight = itemData.weight;
+                    invItem.BookmarkSlot = itemData.bookmarkSlot;
+                    inventoryItems.Add(invItem);
+                }
+            }
+        }
+        OnInventoryChanged?.Invoke();
     }
 }

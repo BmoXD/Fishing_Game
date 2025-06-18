@@ -82,7 +82,10 @@ public class InteractiveUIElement : MonoBehaviour, IPointerEnterHandler, IPointe
 
     protected virtual void OnDisable()
     {
-        TooltipManager.Instance.HideTooltip();
+        if (TooltipManager.Instance != null)
+        {
+            TooltipManager.Instance.HideTooltip();
+        }
     }
 
     private void OnHandleEnterMinigame(bool inMinigame)

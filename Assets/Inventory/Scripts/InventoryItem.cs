@@ -23,9 +23,9 @@ public class InventoryItem
         set => customWeight = value;
     }
 
-    public float getPrice()
+    public int getPrice()
     {
-        return Mathf.Floor(Weight * ItemData.basePricePerGram);
+        return (int)Mathf.Floor(Weight * ItemData.basePricePerGram);
     }
 
     // Check if using custom weight

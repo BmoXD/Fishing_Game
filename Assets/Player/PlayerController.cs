@@ -49,6 +49,14 @@ public class ThirdPersonController : MonoBehaviour
     [Tooltip("Curve for FOV interpolation (0-1)")]
     public AnimationCurve FOVCurve = AnimationCurve.EaseInOut(0f, 0f, 1f, 1f);
 
+    [Header("Debug")]
+    [Tooltip("Draw a gizmo at the last safe spot")]
+    public bool DrawSafeSpotGizmo = true;
+
+    // [Header("Drowning")]
+    // [Tooltip("Assign the collider that represents the drowning point (should be a child of the player)")]
+    // public Collider DrowningPointCollider;
+
     // cinemachine
     private float _cinemachineTargetYaw;
     private float _cinemachineTargetPitch;
@@ -97,6 +105,12 @@ public class ThirdPersonController : MonoBehaviour
     // INTERACTION SYSTEM
     public float interactRange = 2f; // How far the player can interact
     private InteractionPoint _activeInteractionPoint;
+
+    // Drowning & Safe Spot
+    private Vector3 _lastSafeSpot;
+    private bool _isInWater = false; // Track if player is in water
+    private bool _isDrowning = false;
+    private Coroutine _drowningCoroutine;
 
     private void Awake()
     {
@@ -148,6 +162,8 @@ public class ThirdPersonController : MonoBehaviour
         // reset our timeouts on start
         _jumpTimeoutDelta = JumpTimeout;
         _fallTimeoutDelta = FallTimeout;
+
+        _lastSafeSpot = transform.position; // Initialize safe spot to starting position
     }
 
     private void Start()
@@ -375,6 +391,15 @@ public class ThirdPersonController : MonoBehaviour
         }
         GroundedCheck();
         JumpAndGravity();
+
+        Debug.LogError("_grounded: "+_grounded);
+        Debug.LogError("_isInWater: "+_isInWater);
+        // Update safe spot if grounded and not in water
+        if (_grounded && !_isInWater)
+        {
+            _lastSafeSpot = transform.position;
+        }
+
         if (_movementEnabled)
         {
             Move();
@@ -382,7 +407,16 @@ public class ThirdPersonController : MonoBehaviour
         }
         HandleCameraZoom();
     }
-    
+
+    /// <summary>
+    /// Call this when the player drowns to teleport them to the last safe spot.
+    /// </summary>
+    public void TeleportToSafeSpot()
+    {
+        _controller.enabled = false; // Disable to avoid CharacterController issues
+        transform.position = _lastSafeSpot + Vector3.up;
+        _controller.enabled = true;
+    }
 
     private void CheckSprintState()
     {
@@ -443,8 +477,10 @@ public class ThirdPersonController : MonoBehaviour
     private void GroundedCheck()
     {
         // set sphere position, with offset
-        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - 0.1f, transform.position.z);
-        _grounded = Physics.CheckSphere(spherePosition, 0.2f, LayerMask.GetMask("Default"), QueryTriggerInteraction.Ignore);
+        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - 0.0f, transform.position.z);
+        // Check for ground on both "Default" and "CamerCollideIgnore" layers
+        int groundLayerMask = LayerMask.GetMask("Default", "Default_CameraCollideIgnore");
+        _grounded = Physics.CheckSphere(spherePosition, 0.15f, groundLayerMask, QueryTriggerInteraction.Ignore);
 
         // update animator if using character
         if (_hasAnimator)
@@ -608,5 +644,76 @@ public class ThirdPersonController : MonoBehaviour
         if (lfAngle < -360f) lfAngle += 360f;
         if (lfAngle > 360f) lfAngle -= 360f;
         return Mathf.Clamp(lfAngle, lfMin, lfMax);
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (DrawSafeSpotGizmo)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(_lastSafeSpot, 0.3f);
+        }
+        // Draw the grounded check sphere
+        Gizmos.color = Color.yellow;
+        Vector3 spherePosition = new Vector3(transform.position.x, transform.position.y - 0.0f, transform.position.z);
+        Gizmos.DrawWireSphere(spherePosition, 0.15f);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Water"))
+        {
+            Debug.Log("Is touching water");
+            _isInWater = true;
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Water"))
+        {
+            Debug.Log("Is touching water");
+            _isInWater = false;
+        }
+    }
+    
+    public void OnDrowningPointEnterWater()
+    {
+        if (!_isDrowning)
+        {
+            StartDrowning();
+        }
+    }
+
+    private void StartDrowning()
+    {
+        if (_drowningCoroutine == null)
+        {
+            _drowningCoroutine = StartCoroutine(DrowningRoutine());
+        }
+    }
+
+    private IEnumerator DrowningRoutine()
+    {
+        _isDrowning = true;
+        _movementEnabled = false;
+        if (_hasAnimator)
+        {
+            _animator.SetBool("Drowning", true);
+        }
+        // Optionally, disable input or camera control here
+        yield return new WaitForSeconds(2f);
+        if (_hasAnimator)
+        {
+            _animator.SetBool("Drowning", false);
+        }
+        // Teleport to safe spot + 3 units up
+        _controller.enabled = false;
+        TeleportToSafeSpot();
+        _controller.enabled = true;
+        _movementEnabled = true;
+        _isDrowning = false;
+        _drowningCoroutine = null;
+        _isInWater = false;
     }
 }

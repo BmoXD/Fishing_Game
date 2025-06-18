@@ -19,6 +19,7 @@ public class ItemEditor : Editor
         EditorGUILayout.PropertyField(serializedObject.FindProperty("prefab"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("description"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("weight"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("sellable"));
         EditorGUILayout.PropertyField(serializedObject.FindProperty("type"));
 
         var type = (ItemType)serializedObject.FindProperty("type").enumValueIndex;
@@ -37,7 +38,7 @@ public class ItemEditor : Editor
 
         if (type == ItemType.Consumable || type == ItemType.Tool)
         {
-            EditorGUILayout.PropertyField(serializedObject.FindProperty("functionalityScript"));
+            // EditorGUILayout.PropertyField(serializedObject.FindProperty("functionalityScript"));
             EditorGUILayout.PropertyField(serializedObject.FindProperty("onScreenHints"), true);
         }
 

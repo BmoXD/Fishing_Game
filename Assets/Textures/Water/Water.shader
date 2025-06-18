@@ -347,7 +347,7 @@ Shader "Water"
 				return 130.0 * dot( m, g );
 			}
 			
-			float Unity_GradientNoise_float54_g14( float2 UV, float Scale )
+			float Unity_GradientNoise_float54_g31( float2 UV, float Scale )
 			{
 				return unity_gradientNoise(UV * Scale) + 0.5;
 			}
@@ -360,21 +360,21 @@ Shader "Water"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				float temp_output_58_0_g12 = _SmoothStepMin;
-				float temp_output_59_0_g12 = _SmoothStepMax;
+				float temp_output_58_0_g32 = _SmoothStepMin;
+				float temp_output_59_0_g32 = _SmoothStepMax;
 				float3 ase_worldPos = TransformObjectToWorld( (v.positionOS).xyz );
-				float2 temp_output_121_0_g12 = (ase_worldPos).xz;
-				float2 appendResult46_g12 = (float2(_NoiseXTiling , _NoiseYTiling));
-				float mulTime42_g12 = _TimeParameters.x * _timescale;
-				float2 appendResult45_g12 = (float2(mulTime42_g12 , 0.0));
-				float2 texCoord49_g12 = v.ase_texcoord.xy * appendResult46_g12 + appendResult45_g12;
-				float simplePerlin2D43_g12 = snoise( ( temp_output_121_0_g12 + texCoord49_g12 ) );
-				float2 appendResult114_g12 = (float2(_NoiseXTiling , _NoiseYTiling));
-				float2 texCoord47_g12 = v.ase_texcoord.xy * appendResult114_g12 + (appendResult45_g12).yx;
-				float simplePerlin2D50_g12 = snoise( ( temp_output_121_0_g12 + texCoord47_g12 ) );
-				float temp_output_36_0_g12 = ( simplePerlin2D43_g12 - ( simplePerlin2D50_g12 * 0.25 ) );
-				float smoothstepResult53_g12 = smoothstep( min( temp_output_58_0_g12 , temp_output_59_0_g12 ) , max( temp_output_58_0_g12 , temp_output_59_0_g12 ) , temp_output_36_0_g12);
-				float3 temp_output_93_0 = ( ( saturate( v.normalOS ) * smoothstepResult53_g12 ) * _WaveAmplitude );
+				float2 temp_output_121_0_g32 = (ase_worldPos).xz;
+				float2 appendResult46_g32 = (float2(_NoiseXTiling , _NoiseYTiling));
+				float mulTime42_g32 = _TimeParameters.x * _timescale;
+				float2 appendResult45_g32 = (float2(mulTime42_g32 , 0.0));
+				float2 texCoord49_g32 = v.ase_texcoord.xy * appendResult46_g32 + appendResult45_g32;
+				float simplePerlin2D43_g32 = snoise( ( temp_output_121_0_g32 + texCoord49_g32 ) );
+				float2 appendResult114_g32 = (float2(_NoiseXTiling , _NoiseYTiling));
+				float2 texCoord47_g32 = v.ase_texcoord.xy * appendResult114_g32 + (appendResult45_g32).yx;
+				float simplePerlin2D50_g32 = snoise( ( temp_output_121_0_g32 + texCoord47_g32 ) );
+				float temp_output_36_0_g32 = ( simplePerlin2D43_g32 - ( simplePerlin2D50_g32 * 0.25 ) );
+				float smoothstepResult53_g32 = smoothstep( min( temp_output_58_0_g32 , temp_output_59_0_g32 ) , max( temp_output_58_0_g32 , temp_output_59_0_g32 ) , temp_output_36_0_g32);
+				float3 temp_output_93_0 = ( ( saturate( v.normalOS ) * smoothstepResult53_g32 ) * _WaveAmplitude );
 				
 				o.ase_texcoord4.xy = v.ase_texcoord.xy;
 				o.ase_normal = v.normalOS;
@@ -580,25 +580,25 @@ Shader "Water"
 				float pixelWidth59 =  1.0f / 50.0;
 				float pixelHeight59 = 1.0f / 50.0;
 				half2 pixelateduv59 = half2((int)(panner39.x / pixelWidth59) * pixelWidth59, (int)(panner39.y / pixelHeight59) * pixelHeight59);
-				float2 UV54_g14 = pixelateduv59;
-				float Scale54_g14 = 15.0;
-				float localUnity_GradientNoise_float54_g14 = Unity_GradientNoise_float54_g14( UV54_g14 , Scale54_g14 );
-				float temp_output_40_0 = step( ( distanceDepth32 * _edgefoamcutoff_Instance ) , localUnity_GradientNoise_float54_g14 );
+				float2 UV54_g31 = pixelateduv59;
+				float Scale54_g31 = 15.0;
+				float localUnity_GradientNoise_float54_g31 = Unity_GradientNoise_float54_g31( UV54_g31 , Scale54_g31 );
+				float temp_output_40_0 = step( ( distanceDepth32 * _edgefoamcutoff_Instance ) , localUnity_GradientNoise_float54_g31 );
 				float4 lerpResult43 = lerp( lerpResult72 , color45 , temp_output_40_0);
-				float temp_output_58_0_g12 = _SmoothStepMin;
-				float temp_output_59_0_g12 = _SmoothStepMax;
-				float2 temp_output_121_0_g12 = (WorldPosition).xz;
-				float2 appendResult46_g12 = (float2(_NoiseXTiling , _NoiseYTiling));
-				float mulTime42_g12 = _TimeParameters.x * _timescale;
-				float2 appendResult45_g12 = (float2(mulTime42_g12 , 0.0));
-				float2 texCoord49_g12 = IN.ase_texcoord4.xy * appendResult46_g12 + appendResult45_g12;
-				float simplePerlin2D43_g12 = snoise( ( temp_output_121_0_g12 + texCoord49_g12 ) );
-				float2 appendResult114_g12 = (float2(_NoiseXTiling , _NoiseYTiling));
-				float2 texCoord47_g12 = IN.ase_texcoord4.xy * appendResult114_g12 + (appendResult45_g12).yx;
-				float simplePerlin2D50_g12 = snoise( ( temp_output_121_0_g12 + texCoord47_g12 ) );
-				float temp_output_36_0_g12 = ( simplePerlin2D43_g12 - ( simplePerlin2D50_g12 * 0.25 ) );
-				float smoothstepResult53_g12 = smoothstep( min( temp_output_58_0_g12 , temp_output_59_0_g12 ) , max( temp_output_58_0_g12 , temp_output_59_0_g12 ) , temp_output_36_0_g12);
-				float3 temp_output_93_0 = ( ( saturate( IN.ase_normal ) * smoothstepResult53_g12 ) * _WaveAmplitude );
+				float temp_output_58_0_g32 = _SmoothStepMin;
+				float temp_output_59_0_g32 = _SmoothStepMax;
+				float2 temp_output_121_0_g32 = (WorldPosition).xz;
+				float2 appendResult46_g32 = (float2(_NoiseXTiling , _NoiseYTiling));
+				float mulTime42_g32 = _TimeParameters.x * _timescale;
+				float2 appendResult45_g32 = (float2(mulTime42_g32 , 0.0));
+				float2 texCoord49_g32 = IN.ase_texcoord4.xy * appendResult46_g32 + appendResult45_g32;
+				float simplePerlin2D43_g32 = snoise( ( temp_output_121_0_g32 + texCoord49_g32 ) );
+				float2 appendResult114_g32 = (float2(_NoiseXTiling , _NoiseYTiling));
+				float2 texCoord47_g32 = IN.ase_texcoord4.xy * appendResult114_g32 + (appendResult45_g32).yx;
+				float simplePerlin2D50_g32 = snoise( ( temp_output_121_0_g32 + texCoord47_g32 ) );
+				float temp_output_36_0_g32 = ( simplePerlin2D43_g32 - ( simplePerlin2D50_g32 * 0.25 ) );
+				float smoothstepResult53_g32 = smoothstep( min( temp_output_58_0_g32 , temp_output_59_0_g32 ) , max( temp_output_58_0_g32 , temp_output_59_0_g32 ) , temp_output_36_0_g32);
+				float3 temp_output_93_0 = ( ( saturate( IN.ase_normal ) * smoothstepResult53_g32 ) * _WaveAmplitude );
 				float4 lerpResult226 = lerp( ( 0.5 * (( _ShowVertexOffsetmask )?( float4( temp_output_93_0 , 0.0 ) ):( ( temp_output_217_0 + lerpResult43 ) )) ) , (( _ShowVertexOffsetmask )?( float4( temp_output_93_0 , 0.0 ) ):( ( temp_output_217_0 + lerpResult43 ) )) , ase_vface);
 				
 				float lerpResult229 = lerp( 0.87 , 1.0 , ( temp_output_217_0 + temp_output_134_0 + temp_output_40_0 ));
@@ -780,7 +780,7 @@ Shader "Water"
 				return 130.0 * dot( m, g );
 			}
 			
-			float Unity_GradientNoise_float54_g14( float2 UV, float Scale )
+			float Unity_GradientNoise_float54_g31( float2 UV, float Scale )
 			{
 				return unity_gradientNoise(UV * Scale) + 0.5;
 			}
@@ -793,21 +793,21 @@ Shader "Water"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				float temp_output_58_0_g12 = _SmoothStepMin;
-				float temp_output_59_0_g12 = _SmoothStepMax;
+				float temp_output_58_0_g32 = _SmoothStepMin;
+				float temp_output_59_0_g32 = _SmoothStepMax;
 				float3 ase_worldPos = TransformObjectToWorld( (v.positionOS).xyz );
-				float2 temp_output_121_0_g12 = (ase_worldPos).xz;
-				float2 appendResult46_g12 = (float2(_NoiseXTiling , _NoiseYTiling));
-				float mulTime42_g12 = _TimeParameters.x * _timescale;
-				float2 appendResult45_g12 = (float2(mulTime42_g12 , 0.0));
-				float2 texCoord49_g12 = v.ase_texcoord.xy * appendResult46_g12 + appendResult45_g12;
-				float simplePerlin2D43_g12 = snoise( ( temp_output_121_0_g12 + texCoord49_g12 ) );
-				float2 appendResult114_g12 = (float2(_NoiseXTiling , _NoiseYTiling));
-				float2 texCoord47_g12 = v.ase_texcoord.xy * appendResult114_g12 + (appendResult45_g12).yx;
-				float simplePerlin2D50_g12 = snoise( ( temp_output_121_0_g12 + texCoord47_g12 ) );
-				float temp_output_36_0_g12 = ( simplePerlin2D43_g12 - ( simplePerlin2D50_g12 * 0.25 ) );
-				float smoothstepResult53_g12 = smoothstep( min( temp_output_58_0_g12 , temp_output_59_0_g12 ) , max( temp_output_58_0_g12 , temp_output_59_0_g12 ) , temp_output_36_0_g12);
-				float3 temp_output_93_0 = ( ( saturate( v.normalOS ) * smoothstepResult53_g12 ) * _WaveAmplitude );
+				float2 temp_output_121_0_g32 = (ase_worldPos).xz;
+				float2 appendResult46_g32 = (float2(_NoiseXTiling , _NoiseYTiling));
+				float mulTime42_g32 = _TimeParameters.x * _timescale;
+				float2 appendResult45_g32 = (float2(mulTime42_g32 , 0.0));
+				float2 texCoord49_g32 = v.ase_texcoord.xy * appendResult46_g32 + appendResult45_g32;
+				float simplePerlin2D43_g32 = snoise( ( temp_output_121_0_g32 + texCoord49_g32 ) );
+				float2 appendResult114_g32 = (float2(_NoiseXTiling , _NoiseYTiling));
+				float2 texCoord47_g32 = v.ase_texcoord.xy * appendResult114_g32 + (appendResult45_g32).yx;
+				float simplePerlin2D50_g32 = snoise( ( temp_output_121_0_g32 + texCoord47_g32 ) );
+				float temp_output_36_0_g32 = ( simplePerlin2D43_g32 - ( simplePerlin2D50_g32 * 0.25 ) );
+				float smoothstepResult53_g32 = smoothstep( min( temp_output_58_0_g32 , temp_output_59_0_g32 ) , max( temp_output_58_0_g32 , temp_output_59_0_g32 ) , temp_output_36_0_g32);
+				float3 temp_output_93_0 = ( ( saturate( v.normalOS ) * smoothstepResult53_g32 ) * _WaveAmplitude );
 				
 				o.ase_texcoord3.xy = v.ase_texcoord.xy;
 				
@@ -995,10 +995,10 @@ Shader "Water"
 				float pixelWidth59 =  1.0f / 50.0;
 				float pixelHeight59 = 1.0f / 50.0;
 				half2 pixelateduv59 = half2((int)(panner39.x / pixelWidth59) * pixelWidth59, (int)(panner39.y / pixelHeight59) * pixelHeight59);
-				float2 UV54_g14 = pixelateduv59;
-				float Scale54_g14 = 15.0;
-				float localUnity_GradientNoise_float54_g14 = Unity_GradientNoise_float54_g14( UV54_g14 , Scale54_g14 );
-				float temp_output_40_0 = step( ( distanceDepth32 * _edgefoamcutoff_Instance ) , localUnity_GradientNoise_float54_g14 );
+				float2 UV54_g31 = pixelateduv59;
+				float Scale54_g31 = 15.0;
+				float localUnity_GradientNoise_float54_g31 = Unity_GradientNoise_float54_g31( UV54_g31 , Scale54_g31 );
+				float temp_output_40_0 = step( ( distanceDepth32 * _edgefoamcutoff_Instance ) , localUnity_GradientNoise_float54_g31 );
 				float lerpResult229 = lerp( 0.87 , 1.0 , ( temp_output_217_0 + temp_output_134_0 + temp_output_40_0 ));
 				
 
@@ -1164,7 +1164,7 @@ Shader "Water"
 				return 130.0 * dot( m, g );
 			}
 			
-			float Unity_GradientNoise_float54_g14( float2 UV, float Scale )
+			float Unity_GradientNoise_float54_g31( float2 UV, float Scale )
 			{
 				return unity_gradientNoise(UV * Scale) + 0.5;
 			}
@@ -1188,21 +1188,21 @@ Shader "Water"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				float temp_output_58_0_g12 = _SmoothStepMin;
-				float temp_output_59_0_g12 = _SmoothStepMax;
+				float temp_output_58_0_g32 = _SmoothStepMin;
+				float temp_output_59_0_g32 = _SmoothStepMax;
 				float3 ase_worldPos = TransformObjectToWorld( (v.positionOS).xyz );
-				float2 temp_output_121_0_g12 = (ase_worldPos).xz;
-				float2 appendResult46_g12 = (float2(_NoiseXTiling , _NoiseYTiling));
-				float mulTime42_g12 = _TimeParameters.x * _timescale;
-				float2 appendResult45_g12 = (float2(mulTime42_g12 , 0.0));
-				float2 texCoord49_g12 = v.ase_texcoord.xy * appendResult46_g12 + appendResult45_g12;
-				float simplePerlin2D43_g12 = snoise( ( temp_output_121_0_g12 + texCoord49_g12 ) );
-				float2 appendResult114_g12 = (float2(_NoiseXTiling , _NoiseYTiling));
-				float2 texCoord47_g12 = v.ase_texcoord.xy * appendResult114_g12 + (appendResult45_g12).yx;
-				float simplePerlin2D50_g12 = snoise( ( temp_output_121_0_g12 + texCoord47_g12 ) );
-				float temp_output_36_0_g12 = ( simplePerlin2D43_g12 - ( simplePerlin2D50_g12 * 0.25 ) );
-				float smoothstepResult53_g12 = smoothstep( min( temp_output_58_0_g12 , temp_output_59_0_g12 ) , max( temp_output_58_0_g12 , temp_output_59_0_g12 ) , temp_output_36_0_g12);
-				float3 temp_output_93_0 = ( ( saturate( v.normalOS ) * smoothstepResult53_g12 ) * _WaveAmplitude );
+				float2 temp_output_121_0_g32 = (ase_worldPos).xz;
+				float2 appendResult46_g32 = (float2(_NoiseXTiling , _NoiseYTiling));
+				float mulTime42_g32 = _TimeParameters.x * _timescale;
+				float2 appendResult45_g32 = (float2(mulTime42_g32 , 0.0));
+				float2 texCoord49_g32 = v.ase_texcoord.xy * appendResult46_g32 + appendResult45_g32;
+				float simplePerlin2D43_g32 = snoise( ( temp_output_121_0_g32 + texCoord49_g32 ) );
+				float2 appendResult114_g32 = (float2(_NoiseXTiling , _NoiseYTiling));
+				float2 texCoord47_g32 = v.ase_texcoord.xy * appendResult114_g32 + (appendResult45_g32).yx;
+				float simplePerlin2D50_g32 = snoise( ( temp_output_121_0_g32 + texCoord47_g32 ) );
+				float temp_output_36_0_g32 = ( simplePerlin2D43_g32 - ( simplePerlin2D50_g32 * 0.25 ) );
+				float smoothstepResult53_g32 = smoothstep( min( temp_output_58_0_g32 , temp_output_59_0_g32 ) , max( temp_output_58_0_g32 , temp_output_59_0_g32 ) , temp_output_36_0_g32);
+				float3 temp_output_93_0 = ( ( saturate( v.normalOS ) * smoothstepResult53_g32 ) * _WaveAmplitude );
 				
 				o.ase_texcoord.xyz = ase_worldPos;
 				float4 ase_clipPos = TransformObjectToHClip((v.positionOS).xyz);
@@ -1372,10 +1372,10 @@ Shader "Water"
 				float pixelWidth59 =  1.0f / 50.0;
 				float pixelHeight59 = 1.0f / 50.0;
 				half2 pixelateduv59 = half2((int)(panner39.x / pixelWidth59) * pixelWidth59, (int)(panner39.y / pixelHeight59) * pixelHeight59);
-				float2 UV54_g14 = pixelateduv59;
-				float Scale54_g14 = 15.0;
-				float localUnity_GradientNoise_float54_g14 = Unity_GradientNoise_float54_g14( UV54_g14 , Scale54_g14 );
-				float temp_output_40_0 = step( ( distanceDepth32 * _edgefoamcutoff_Instance ) , localUnity_GradientNoise_float54_g14 );
+				float2 UV54_g31 = pixelateduv59;
+				float Scale54_g31 = 15.0;
+				float localUnity_GradientNoise_float54_g31 = Unity_GradientNoise_float54_g31( UV54_g31 , Scale54_g31 );
+				float temp_output_40_0 = step( ( distanceDepth32 * _edgefoamcutoff_Instance ) , localUnity_GradientNoise_float54_g31 );
 				float lerpResult229 = lerp( 0.87 , 1.0 , ( temp_output_217_0 + temp_output_134_0 + temp_output_40_0 ));
 				
 
@@ -1547,7 +1547,7 @@ Shader "Water"
 				return 130.0 * dot( m, g );
 			}
 			
-			float Unity_GradientNoise_float54_g14( float2 UV, float Scale )
+			float Unity_GradientNoise_float54_g31( float2 UV, float Scale )
 			{
 				return unity_gradientNoise(UV * Scale) + 0.5;
 			}
@@ -1570,21 +1570,21 @@ Shader "Water"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				float temp_output_58_0_g12 = _SmoothStepMin;
-				float temp_output_59_0_g12 = _SmoothStepMax;
+				float temp_output_58_0_g32 = _SmoothStepMin;
+				float temp_output_59_0_g32 = _SmoothStepMax;
 				float3 ase_worldPos = TransformObjectToWorld( (v.positionOS).xyz );
-				float2 temp_output_121_0_g12 = (ase_worldPos).xz;
-				float2 appendResult46_g12 = (float2(_NoiseXTiling , _NoiseYTiling));
-				float mulTime42_g12 = _TimeParameters.x * _timescale;
-				float2 appendResult45_g12 = (float2(mulTime42_g12 , 0.0));
-				float2 texCoord49_g12 = v.ase_texcoord.xy * appendResult46_g12 + appendResult45_g12;
-				float simplePerlin2D43_g12 = snoise( ( temp_output_121_0_g12 + texCoord49_g12 ) );
-				float2 appendResult114_g12 = (float2(_NoiseXTiling , _NoiseYTiling));
-				float2 texCoord47_g12 = v.ase_texcoord.xy * appendResult114_g12 + (appendResult45_g12).yx;
-				float simplePerlin2D50_g12 = snoise( ( temp_output_121_0_g12 + texCoord47_g12 ) );
-				float temp_output_36_0_g12 = ( simplePerlin2D43_g12 - ( simplePerlin2D50_g12 * 0.25 ) );
-				float smoothstepResult53_g12 = smoothstep( min( temp_output_58_0_g12 , temp_output_59_0_g12 ) , max( temp_output_58_0_g12 , temp_output_59_0_g12 ) , temp_output_36_0_g12);
-				float3 temp_output_93_0 = ( ( saturate( v.normalOS ) * smoothstepResult53_g12 ) * _WaveAmplitude );
+				float2 temp_output_121_0_g32 = (ase_worldPos).xz;
+				float2 appendResult46_g32 = (float2(_NoiseXTiling , _NoiseYTiling));
+				float mulTime42_g32 = _TimeParameters.x * _timescale;
+				float2 appendResult45_g32 = (float2(mulTime42_g32 , 0.0));
+				float2 texCoord49_g32 = v.ase_texcoord.xy * appendResult46_g32 + appendResult45_g32;
+				float simplePerlin2D43_g32 = snoise( ( temp_output_121_0_g32 + texCoord49_g32 ) );
+				float2 appendResult114_g32 = (float2(_NoiseXTiling , _NoiseYTiling));
+				float2 texCoord47_g32 = v.ase_texcoord.xy * appendResult114_g32 + (appendResult45_g32).yx;
+				float simplePerlin2D50_g32 = snoise( ( temp_output_121_0_g32 + texCoord47_g32 ) );
+				float temp_output_36_0_g32 = ( simplePerlin2D43_g32 - ( simplePerlin2D50_g32 * 0.25 ) );
+				float smoothstepResult53_g32 = smoothstep( min( temp_output_58_0_g32 , temp_output_59_0_g32 ) , max( temp_output_58_0_g32 , temp_output_59_0_g32 ) , temp_output_36_0_g32);
+				float3 temp_output_93_0 = ( ( saturate( v.normalOS ) * smoothstepResult53_g32 ) * _WaveAmplitude );
 				
 				o.ase_texcoord.xyz = ase_worldPos;
 				float4 ase_clipPos = TransformObjectToHClip((v.positionOS).xyz);
@@ -1752,10 +1752,10 @@ Shader "Water"
 				float pixelWidth59 =  1.0f / 50.0;
 				float pixelHeight59 = 1.0f / 50.0;
 				half2 pixelateduv59 = half2((int)(panner39.x / pixelWidth59) * pixelWidth59, (int)(panner39.y / pixelHeight59) * pixelHeight59);
-				float2 UV54_g14 = pixelateduv59;
-				float Scale54_g14 = 15.0;
-				float localUnity_GradientNoise_float54_g14 = Unity_GradientNoise_float54_g14( UV54_g14 , Scale54_g14 );
-				float temp_output_40_0 = step( ( distanceDepth32 * _edgefoamcutoff_Instance ) , localUnity_GradientNoise_float54_g14 );
+				float2 UV54_g31 = pixelateduv59;
+				float Scale54_g31 = 15.0;
+				float localUnity_GradientNoise_float54_g31 = Unity_GradientNoise_float54_g31( UV54_g31 , Scale54_g31 );
+				float temp_output_40_0 = step( ( distanceDepth32 * _edgefoamcutoff_Instance ) , localUnity_GradientNoise_float54_g31 );
 				float lerpResult229 = lerp( 0.87 , 1.0 , ( temp_output_217_0 + temp_output_134_0 + temp_output_40_0 ));
 				
 
@@ -1941,7 +1941,7 @@ Shader "Water"
 				return 130.0 * dot( m, g );
 			}
 			
-			float Unity_GradientNoise_float54_g14( float2 UV, float Scale )
+			float Unity_GradientNoise_float54_g31( float2 UV, float Scale )
 			{
 				return unity_gradientNoise(UV * Scale) + 0.5;
 			}
@@ -1962,21 +1962,21 @@ Shader "Water"
 				UNITY_TRANSFER_INSTANCE_ID(v, o);
 				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
 
-				float temp_output_58_0_g12 = _SmoothStepMin;
-				float temp_output_59_0_g12 = _SmoothStepMax;
+				float temp_output_58_0_g32 = _SmoothStepMin;
+				float temp_output_59_0_g32 = _SmoothStepMax;
 				float3 ase_worldPos = TransformObjectToWorld( (v.positionOS).xyz );
-				float2 temp_output_121_0_g12 = (ase_worldPos).xz;
-				float2 appendResult46_g12 = (float2(_NoiseXTiling , _NoiseYTiling));
-				float mulTime42_g12 = _TimeParameters.x * _timescale;
-				float2 appendResult45_g12 = (float2(mulTime42_g12 , 0.0));
-				float2 texCoord49_g12 = v.ase_texcoord.xy * appendResult46_g12 + appendResult45_g12;
-				float simplePerlin2D43_g12 = snoise( ( temp_output_121_0_g12 + texCoord49_g12 ) );
-				float2 appendResult114_g12 = (float2(_NoiseXTiling , _NoiseYTiling));
-				float2 texCoord47_g12 = v.ase_texcoord.xy * appendResult114_g12 + (appendResult45_g12).yx;
-				float simplePerlin2D50_g12 = snoise( ( temp_output_121_0_g12 + texCoord47_g12 ) );
-				float temp_output_36_0_g12 = ( simplePerlin2D43_g12 - ( simplePerlin2D50_g12 * 0.25 ) );
-				float smoothstepResult53_g12 = smoothstep( min( temp_output_58_0_g12 , temp_output_59_0_g12 ) , max( temp_output_58_0_g12 , temp_output_59_0_g12 ) , temp_output_36_0_g12);
-				float3 temp_output_93_0 = ( ( saturate( v.normalOS ) * smoothstepResult53_g12 ) * _WaveAmplitude );
+				float2 temp_output_121_0_g32 = (ase_worldPos).xz;
+				float2 appendResult46_g32 = (float2(_NoiseXTiling , _NoiseYTiling));
+				float mulTime42_g32 = _TimeParameters.x * _timescale;
+				float2 appendResult45_g32 = (float2(mulTime42_g32 , 0.0));
+				float2 texCoord49_g32 = v.ase_texcoord.xy * appendResult46_g32 + appendResult45_g32;
+				float simplePerlin2D43_g32 = snoise( ( temp_output_121_0_g32 + texCoord49_g32 ) );
+				float2 appendResult114_g32 = (float2(_NoiseXTiling , _NoiseYTiling));
+				float2 texCoord47_g32 = v.ase_texcoord.xy * appendResult114_g32 + (appendResult45_g32).yx;
+				float simplePerlin2D50_g32 = snoise( ( temp_output_121_0_g32 + texCoord47_g32 ) );
+				float temp_output_36_0_g32 = ( simplePerlin2D43_g32 - ( simplePerlin2D50_g32 * 0.25 ) );
+				float smoothstepResult53_g32 = smoothstep( min( temp_output_58_0_g32 , temp_output_59_0_g32 ) , max( temp_output_58_0_g32 , temp_output_59_0_g32 ) , temp_output_36_0_g32);
+				float3 temp_output_93_0 = ( ( saturate( v.normalOS ) * smoothstepResult53_g32 ) * _WaveAmplitude );
 				
 				o.ase_texcoord2.xyz = ase_worldPos;
 				
@@ -2149,10 +2149,10 @@ Shader "Water"
 				float pixelWidth59 =  1.0f / 50.0;
 				float pixelHeight59 = 1.0f / 50.0;
 				half2 pixelateduv59 = half2((int)(panner39.x / pixelWidth59) * pixelWidth59, (int)(panner39.y / pixelHeight59) * pixelHeight59);
-				float2 UV54_g14 = pixelateduv59;
-				float Scale54_g14 = 15.0;
-				float localUnity_GradientNoise_float54_g14 = Unity_GradientNoise_float54_g14( UV54_g14 , Scale54_g14 );
-				float temp_output_40_0 = step( ( distanceDepth32 * _edgefoamcutoff_Instance ) , localUnity_GradientNoise_float54_g14 );
+				float2 UV54_g31 = pixelateduv59;
+				float Scale54_g31 = 15.0;
+				float localUnity_GradientNoise_float54_g31 = Unity_GradientNoise_float54_g31( UV54_g31 , Scale54_g31 );
+				float temp_output_40_0 = step( ( distanceDepth32 * _edgefoamcutoff_Instance ) , localUnity_GradientNoise_float54_g31 );
 				float lerpResult229 = lerp( 0.87 , 1.0 , ( temp_output_217_0 + temp_output_134_0 + temp_output_40_0 ));
 				
 
@@ -2237,7 +2237,7 @@ Node;AmplifyShaderEditor.FunctionNode;216;1040,-176;Inherit;True;WaveyNoise;-1;;
 Node;AmplifyShaderEditor.SaturateNode;130;-96,-1136;Inherit;True;1;0;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleAddOpNode;128;-560,-880;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;33;-496,720;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
-Node;AmplifyShaderEditor.FunctionNode;50;-752,976;Inherit;True;GradientNoise;-1;;14;73bcad20642e36b47bcbf1cdbeca1c3f;0;2;2;FLOAT2;0,0;False;3;FLOAT;15;False;1;FLOAT;0
+Node;AmplifyShaderEditor.FunctionNode;50;-752,976;Inherit;True;GradientNoise;-1;;31;73bcad20642e36b47bcbf1cdbeca1c3f;0;2;2;FLOAT2;0,0;False;3;FLOAT;15;False;1;FLOAT;0
 Node;AmplifyShaderEditor.NormalVertexDataNode;88;528,784;Inherit;True;0;5;FLOAT3;0;FLOAT;1;FLOAT;2;FLOAT;3;FLOAT;4
 Node;AmplifyShaderEditor.RangedFloatNode;98;400,1184;Inherit;False;Property;_NoiseXTiling;NoiseXTiling;5;0;Create;True;0;0;0;False;0;False;0.11;-0.37;0;0;0;1;FLOAT;0
 Node;AmplifyShaderEditor.RangedFloatNode;97;400,1264;Inherit;False;Property;_NoiseYTiling;NoiseYTiling;3;0;Create;True;0;0;0;False;0;False;1.5;-0.56;0;0;0;1;FLOAT;0
@@ -2248,7 +2248,7 @@ Node;AmplifyShaderEditor.SimpleMultiplyOpNode;217;1392,-16;Inherit;False;2;2;0;F
 Node;AmplifyShaderEditor.StepOpNode;40;-176,880;Inherit;True;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleAddOpNode;134;-32,-624;Inherit;False;2;2;0;FLOAT;0;False;1;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SaturateNode;111;816,848;Inherit;False;1;0;FLOAT3;0,0,0;False;1;FLOAT3;0
-Node;AmplifyShaderEditor.FunctionNode;180;672,1104;Inherit;True;WaveyNoise;-1;;12;9dc2d18825a682f48bbca186d0eb3c42;2,115,1,106,1;9;121;FLOAT2;0,0;False;60;FLOAT;1;False;61;FLOAT;1;False;62;FLOAT;1;False;112;FLOAT;1;False;113;FLOAT;1;False;109;FLOAT;0.3;False;58;FLOAT;0.3;False;59;FLOAT;0.6;False;1;FLOAT;0
+Node;AmplifyShaderEditor.FunctionNode;180;672,1104;Inherit;True;WaveyNoise;-1;;32;9dc2d18825a682f48bbca186d0eb3c42;2,115,1,106,1;9;121;FLOAT2;0,0;False;60;FLOAT;1;False;61;FLOAT;1;False;62;FLOAT;1;False;112;FLOAT;1;False;113;FLOAT;1;False;109;FLOAT;0.3;False;58;FLOAT;0.3;False;59;FLOAT;0.6;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleAddOpNode;232;1552,128;Inherit;False;3;3;0;FLOAT;0;False;1;FLOAT;0;False;2;FLOAT;0;False;1;FLOAT;0
 Node;AmplifyShaderEditor.SimpleMultiplyOpNode;91;1040,832;Inherit;True;2;2;0;FLOAT3;0,0,0;False;1;FLOAT;0;False;1;FLOAT3;0
 Node;AmplifyShaderEditor.RangedFloatNode;94;1040,1168;Inherit;False;Property;_WaveAmplitude;Wave Amplitude;4;0;Create;True;0;0;0;False;0;False;0.6581027;0.68;0;1;0;1;FLOAT;0
@@ -2380,4 +2380,4 @@ WireConnection;159;2;226;0
 WireConnection;159;3;239;0
 WireConnection;159;5;93;0
 ASEEND*/
-//CHKSM=60AC6CE9899DF84A697DD2A3DEDE08BAE6CAFB73
+//CHKSM=96D8F0C5943832A93CCB278354B3E2F855863C79

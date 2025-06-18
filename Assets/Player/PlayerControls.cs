@@ -355,6 +355,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Escape"",
+                    ""type"": ""Button"",
+                    ""id"": ""3cb836c5-d507-4aeb-95fd-fce1bca82c7b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -852,6 +861,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""OpenEmotes"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b56bb2a7-c01c-44b5-8b3b-4a56c47bc0b6"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Escape"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -928,6 +948,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
         m_UI_OpenInventory = m_UI.FindAction("OpenInventory", throwIfNotFound: true);
         m_UI_OpenEmotes = m_UI.FindAction("OpenEmotes", throwIfNotFound: true);
+        m_UI_Escape = m_UI.FindAction("Escape", throwIfNotFound: true);
         // Item
         m_Item = asset.FindActionMap("Item", throwIfNotFound: true);
         m_Item_Use = m_Item.FindAction("Use", throwIfNotFound: true);
@@ -1114,6 +1135,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_UI_TrackedDeviceOrientation;
     private readonly InputAction m_UI_OpenInventory;
     private readonly InputAction m_UI_OpenEmotes;
+    private readonly InputAction m_UI_Escape;
     public struct UIActions
     {
         private @PlayerControls m_Wrapper;
@@ -1131,6 +1153,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @TrackedDeviceOrientation => m_Wrapper.m_UI_TrackedDeviceOrientation;
         public InputAction @OpenInventory => m_Wrapper.m_UI_OpenInventory;
         public InputAction @OpenEmotes => m_Wrapper.m_UI_OpenEmotes;
+        public InputAction @Escape => m_Wrapper.m_UI_Escape;
         public InputActionMap Get() { return m_Wrapper.m_UI; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1179,6 +1202,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @OpenEmotes.started += instance.OnOpenEmotes;
             @OpenEmotes.performed += instance.OnOpenEmotes;
             @OpenEmotes.canceled += instance.OnOpenEmotes;
+            @Escape.started += instance.OnEscape;
+            @Escape.performed += instance.OnEscape;
+            @Escape.canceled += instance.OnEscape;
         }
 
         private void UnregisterCallbacks(IUIActions instance)
@@ -1222,6 +1248,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @OpenEmotes.started -= instance.OnOpenEmotes;
             @OpenEmotes.performed -= instance.OnOpenEmotes;
             @OpenEmotes.canceled -= instance.OnOpenEmotes;
+            @Escape.started -= instance.OnEscape;
+            @Escape.performed -= instance.OnEscape;
+            @Escape.canceled -= instance.OnEscape;
         }
 
         public void RemoveCallbacks(IUIActions instance)
@@ -1320,6 +1349,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnTrackedDeviceOrientation(InputAction.CallbackContext context);
         void OnOpenInventory(InputAction.CallbackContext context);
         void OnOpenEmotes(InputAction.CallbackContext context);
+        void OnEscape(InputAction.CallbackContext context);
     }
     public interface IItemActions
     {
