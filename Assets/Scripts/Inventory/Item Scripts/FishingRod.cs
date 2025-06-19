@@ -255,8 +255,8 @@ public class FishingRod : ItemFunctionality
                 if (uiManager != null)
                 {
                     // You can pass custom values or use fields
-                    // uiManager.OpenMinigamePanel(leftDriftIntensity: 1.2f + (caughtWeight / 1000f) * 2f, rightPushIntensity: 0.5f + (caughtWeight / 1000f) * 3f);
-                    uiManager.OpenMinigamePanel(leftDriftIntensity: 1.2f, rightPushIntensity: 0.5f);
+                    uiManager.OpenMinigamePanel(leftDriftIntensity: 2.5f + (caughtWeight / 10000f) * 2f, rightPushIntensity: 0.62f + (caughtWeight / 10000f) * 3f);
+                    //uiManager.OpenMinigamePanel(leftDriftIntensity: 1.2f, rightPushIntensity: 0.5f);
                 }
                 return;
             }
@@ -344,7 +344,7 @@ public class FishingRod : ItemFunctionality
             currentWaterVolume = lastAimHit.collider.GetComponent<WaterVolume>();
 
             // Start bite timer
-            biteTimerMax = Random.Range(2f, 5f); // Random wait 2-5 seconds
+            biteTimerMax = Random.Range(5f, 20f); // Random wait 2-5 seconds
             biteTimer = 0f;
             isWaitingForBite = true;
 

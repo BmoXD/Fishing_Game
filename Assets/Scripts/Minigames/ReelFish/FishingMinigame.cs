@@ -276,8 +276,8 @@ public class FishingMinigame : MonoBehaviour
 
     public void Configure(float leftDrift, float rightPush)
     {
-        leftDriftIntensity = leftDrift;
-        rightPushIntensity = rightPush;
+        leftDriftIntensity = Mathf.Clamp(leftDrift, 0f, 10f);
+        rightPushIntensity = Mathf.Clamp(rightPush, 0f, 6f);
     }
     
     public float GetCurrentProgress()

@@ -53,16 +53,22 @@ public class WaterVolume : MonoBehaviour
             if (rand <= accum)
             {
                 result.item = entry.item;
-                if (entry.item != null)
-                    result.weight = Random.Range(entry.item.minWeight, entry.item.maxWeight);
+                if (entry.item != null) {
+                    float t = Random.value;
+                    t = t * t; // Bias towards minWeight
+                    result.weight = Mathf.Lerp(entry.item.minWeight, entry.item.maxWeight, t);
+                }
                 return result;
             }
         }
         // fallback
         var last = possibleItems[possibleItems.Count - 1];
         result.item = last.item;
-        if (last.item != null)
-            result.weight = Random.Range(last.item.minWeight, last.item.maxWeight);
+        if (last.item != null) {
+            float t = Random.value;
+            t = t * t; // Bias towards minWeight
+            result.weight = Mathf.Lerp(last.item.minWeight, last.item.maxWeight, t);
+        }
         return result;
     }
 }
