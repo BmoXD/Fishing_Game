@@ -14,15 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemID: 2
   itemName: Fishing Rod
-  icon: {fileID: 21300000, guid: ff7bfa7addf40784d86f62b8e4a034a6, type: 3}
+  icon: {fileID: 21300000, guid: 58c355c72fad02a45bda379f8f0b2901, type: 3}
   prefab: {fileID: 5426466293307873979, guid: 80b9f0ba0a58d2e49be865ccbfad086b, type: 3}
   description: Rod
   weight: 0
+  sellable: 0
   type: 2
   basePricePerGram: 1
   minWeight: 1
   maxWeight: 1000
   deleteOnConsume: 0
-  functionalityScript: {fileID: 0}
   onScreenHints:
   - Left Mouse button to cast
