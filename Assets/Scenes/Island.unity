@@ -30439,7 +30439,7 @@ GameObject:
   - component: {fileID: 1364405254}
   - component: {fileID: 1364405253}
   - component: {fileID: 1364405258}
-  m_Layer: 0
+  m_Layer: 4
   m_Name: WaterVolume
   m_TagString: Water
   m_Icon: {fileID: 0}
@@ -34371,6 +34371,31 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI
       objectReference: {fileID: 0}
+    - target: {fileID: 999573725572364866, guid: e242aa260949c4e43af82fad711521bf,
+        type: 3}
+      propertyPath: progressPerClick
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 999573725572364866, guid: e242aa260949c4e43af82fad711521bf,
+        type: 3}
+      propertyPath: progressPerSecond
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 999573725572364866, guid: e242aa260949c4e43af82fad711521bf,
+        type: 3}
+      propertyPath: leftDriftIntensity
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 999573725572364866, guid: e242aa260949c4e43af82fad711521bf,
+        type: 3}
+      propertyPath: rightPushIntensity
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 999573725572364866, guid: e242aa260949c4e43af82fad711521bf,
+        type: 3}
+      propertyPath: autoActivateForDebug
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1155511750705081479, guid: e242aa260949c4e43af82fad711521bf,
         type: 3}
       propertyPath: m_IsActive
@@ -34479,6 +34504,11 @@ PrefabInstance:
     - target: {fileID: 2472087805967082127, guid: e242aa260949c4e43af82fad711521bf,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2826184476676823158, guid: e242aa260949c4e43af82fad711521bf,
+        type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3092819849560712816, guid: e242aa260949c4e43af82fad711521bf,
