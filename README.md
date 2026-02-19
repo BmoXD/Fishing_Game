@@ -14,7 +14,8 @@ While building this clone, I explored and implemented:
 - Minigame logic (fish catching mechanic)  
 - Player controller scripting  
 - UI systems  
-- Shader creation  
+- Shader creation
+- 3D modelling and texturing
 
 I spent hours studying the original game, idling, observing tiny details, and figuring out how each feature might work behind the scenes. This project became both a technical challenge and a deep dive into game design analysis.
 
